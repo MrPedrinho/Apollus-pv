@@ -1,0 +1,6 @@
+.env
+.env.local
+
+config.json
+
+node_modules
