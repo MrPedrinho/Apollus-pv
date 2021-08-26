@@ -9,17 +9,19 @@ let player = createAudioPlayer({
 })
 
 async function video_player() {
-    console.log("hey")
-    if (!connection) await setConnection()
+    if (!connection) return;
     const song = queue[0]
     console.log(song)
 
+    if (!song.url) {
+        return player.stop()
+    }
+
     let stream = await youtube.stream(song.url)
-    console.log(connection)
     connection.subscribe(player)
 
     const resource = createAudioResource(stream.stream, {inputType: stream.type});
-    console.log("gg")
+
     player.play(resource);
     player.on(AudioPlayerStatus.Idle, () => {
         queue.shift()
@@ -32,7 +34,6 @@ module.exports = {
     player,
 
     async setConnection (message, vc) {
-        console.log("hdddey")
         connection = await joinVoiceChannel({
             channelId: vc.id,
             guildId: message.guild.id,
@@ -54,8 +55,9 @@ module.exports = {
         return queue[0]
     },
 
-    skipSong() {
-
+    async skipSong() {
+        queue.shift()
+        await video_player()
     },
 
     video_player

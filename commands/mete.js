@@ -12,7 +12,6 @@ module.exports = {
         if (!props.length) return;
 
         let song = {}
-        //@todo add queue
 
         var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/;
 
