@@ -1,5 +1,6 @@
 const {createAudioPlayer, NoSubscriberBehavior, createAudioResource, AudioPlayerStatus, joinVoiceChannel} = require("@discordjs/voice");
 const youtube = require("play-dl");
+const {MessageEmbed} = require("discord.js");
 let queue = []
 let connection
 let player = createAudioPlayer({
@@ -13,7 +14,28 @@ async function video_player() {
     const song = queue[0]
     console.log(song)
 
-    if (!song.url) {
+    const date = new Date()
+
+    const embed = new MessageEmbed({
+        "title": "Prepara-te para dançar 💃🕺, está agora a tocar (Os Lusíadas, v.3-4)",
+        "color": 15158332,
+        "timestamp": date,
+        "description": `
+                [${song.title}](${song.url})
+                **Duração** - [${song.duration}](${song.url})
+            `,
+        "thumbnail": {
+            "url": song.thumbnail_url
+        },
+        "footer": {
+            "icon_url": song.author.displayAvatarURL(),
+            "text": `Colocada por ${song.author.username}#${song.author.discriminator}`
+        }
+    })
+
+    song.channel.send({embeds: [embed]})
+
+    if (!song?.url) {
         return player.stop()
     }
 
@@ -45,6 +67,10 @@ module.exports = {
     async addToQueue(song) {
         queue.push(song)
         if (queue.length === 1) await video_player()
+    },
+
+    getQueue() {
+        return queue
     },
 
     shiftQueue () {
