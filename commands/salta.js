@@ -2,7 +2,9 @@
 const {skipSong} = require("../assets")
 
 module.exports = {
-    async execute () {
+    help: 'Skips ilimitados, sem premium',
+
+    async execute (_message, _props) {
         await skipSong()
     }
 }

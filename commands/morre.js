@@ -1,12 +1,10 @@
-const {joinVoiceChannel} = require("@discordjs/voice");
+const {getConnection} = require("../assets");
 
 module.exports = {
-    async execute(message, props) {
-        const connection = await joinVoiceChannel({
-            channelId: message.member.voice.channel.id,
-            guildId: message.guild.id,
-            adapterCreator: message.guild.voiceAdapterCreator,
-        });
+    help: 'A música está-te a irritar? Mata o bot',
+
+    async execute(_message, _props) {
+        const connection = getConnection()
 
         connection.destroy()
     }

@@ -1,11 +1,12 @@
 const youtube = require('play-dl')
 const {video_info} = require("play-dl");
 
-const {addToQueue, setConnection, getQueue} = require("../assets")
+const {addToQueue, setConnection} = require("../assets")
 const {MessageEmbed} = require("discord.js");
-const {Embed} = require("@discordjs/builders");
 
 module.exports = {
+    help: 'Adiciona uma música à playlist',
+
     async execute(message, props) {
         const vc = message.member.voice.channel;
 
@@ -28,6 +29,7 @@ module.exports = {
                 author: message.author,
                 channel: message.channel
             }
+
         } else {
 
             try {
@@ -64,7 +66,7 @@ module.exports = {
             },
             "footer": {
                 "icon_url": message.author.displayAvatarURL(),
-                "text": `Colocada por ${message.author.username}#${message.author.discriminator}`
+                "text": `Música de ${message.author.username}#${message.author.discriminator}`
             }
         })
 

@@ -12,7 +12,10 @@ let player = createAudioPlayer({
 async function video_player() {
     if (!connection) return;
     const song = queue[0]
-    console.log(song)
+
+    if (!song?.url) {
+        return player.stop()
+    }
 
     const date = new Date()
 
@@ -29,15 +32,12 @@ async function video_player() {
         },
         "footer": {
             "icon_url": song.author.displayAvatarURL(),
-            "text": `Colocada por ${song.author.username}#${song.author.discriminator}`
+            "text": `Música de ${song.author.username}#${song.author.discriminator}`
         }
     })
 
     song.channel.send({embeds: [embed]})
 
-    if (!song?.url) {
-        return player.stop()
-    }
 
     let stream = await youtube.stream(song.url)
     connection.subscribe(player)
@@ -54,6 +54,8 @@ async function video_player() {
 
 module.exports = {
     player,
+
+    getConnection () {return connection},
 
     async setConnection (message, vc) {
         connection = await joinVoiceChannel({
@@ -82,6 +84,29 @@ module.exports = {
     },
 
     async skipSong() {
+        const song = queue[0]
+
+        const date = new Date()
+
+        const embed = new MessageEmbed({
+            "title": "A música vou saltar, ou porrada vou levar",
+            "color": 15158332,
+            "timestamp": date,
+            "description": `
+                Agradeçam a <@${song.author.id}> por saltar a música
+                [${song.title}](${song.url})
+            `,
+            "thumbnail": {
+                "url": song.thumbnail_url
+            },
+            "footer": {
+                "icon_url": song.author.displayAvatarURL(),
+                "text": `Música de ${song.author.username}#${song.author.discriminator}`
+            }
+        })
+
+        song.channel.send({embeds: [embed]})
+
         queue.shift()
         await video_player()
     },

@@ -21,7 +21,8 @@ client.on("messageCreate", async (message) => {
     try {
         const command = require(`./commands/${cmd.toLowerCase()}.js`);
         await command.execute(message, props)
-    } catch {
+    } catch (err){
+        console.log(err)
         await message.reply("És estúpido ou fazes-te? Isso não é um comando, porra")
     }
 
