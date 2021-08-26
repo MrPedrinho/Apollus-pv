@@ -1,11 +1,7 @@
-const ytdl = require("ytdl-core")
-const ytSearch = require("yt-search")
-const youtubedl = require("youtube-dl-exec")
 const youtube = require('play-dl')
-const { joinVoiceChannel, createAudioResource} = require('@discordjs/voice');
 const {video_basic_info} = require("play-dl");
-var connection
-const player = require("../assets.js").player
+
+const {addToQueue, setConnection} = require("../assets")
 
 module.exports = {
     async execute(message, props) {
@@ -28,31 +24,17 @@ module.exports = {
 
             const video = await youtube.search(props.join(" "), {limit: 1})
 
-
-
             if (video) {
                 song = {title: video[0].title, url: video[0].url}
             } else return;
         }
 
         try {
-            connection = await joinVoiceChannel({
-                channelId: vc.id,
-                guildId: message.guild.id,
-                adapterCreator: message.guild.voiceAdapterCreator,
-            });
-            await video_player(message.guild, song)
+            await setConnection(message, vc)
+            await addToQueue(song)
         } catch (err) {
             console.log(err)
         }
+
     },
 };
-
-const video_player = async (guild, song) => {
-    let stream = await youtube.stream(song.url)
-
-    connection.subscribe(player)
-
-    const resource = createAudioResource(stream.stream, {inputType: stream.type});
-    player.play(resource);
-}

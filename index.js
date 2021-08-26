@@ -1,5 +1,4 @@
 const { Client } = require("discord.js")
-const ytdl = require('ytdl-core');
 const { token } = require("./config.json")
 
 const client = new Client({intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"]})
@@ -13,9 +12,12 @@ client.on("messageCreate", async (message) => {
     if (allowedPrefix.indexOf(prefix.toLowerCase()) === -1) return;
     if (!cmd) return;
 
-    const command = require(`./commands/${cmd.toLowerCase()}.js`);
-    if (!command) return;
-    await command.execute(message, props)
+    try {
+        const command = require(`./commands/${cmd.toLowerCase()}.js`);
+        await command.execute(message, props)
+    } catch {
+
+    }
 
 })
 
