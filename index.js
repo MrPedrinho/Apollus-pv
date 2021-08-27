@@ -1,5 +1,5 @@
 const { Client } = require("discord.js")
-const { token } = require("./config.json")
+require("dotenv").config()
 
 const client = new Client({intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"]})
 
@@ -30,4 +30,4 @@ client.on("messageCreate", async (message) => {
 
 client.on("ready", () => console.log("ready bitch"))
 
-client.login(token)
+client.login(process.env.TOKEN)
