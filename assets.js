@@ -95,11 +95,15 @@ module.exports = {
     getConnection () {return connection},
 
     async setConnection (message, vc) {
-        connection = await joinVoiceChannel({
-            channelId: vc.id,
-            guildId: message.guild.id,
-            adapterCreator: message.guild.voiceAdapterCreator,
-        });
+        try {
+            connection = await joinVoiceChannel({
+                channelId: vc.id,
+                guildId: message.guild.id,
+                adapterCreator: message.guild.voiceAdapterCreator,
+            });
+        } catch (err) {
+            console.log(err)
+        }
         return true
     },
 
