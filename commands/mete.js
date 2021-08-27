@@ -16,11 +16,10 @@ module.exports = {
 
         let song = {}
 
-        var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/;
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|\?v=)([^#&?]*).*/;
 
         if (props[0].match(regExp)) {
             const {video_details} = await video_info(props[0])
-
             song = {
                 title: video_details.title,
                 url: video_details.url,

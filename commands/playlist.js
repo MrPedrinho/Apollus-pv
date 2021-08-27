@@ -16,7 +16,12 @@ module.exports = {
                 ⬑\n`
         })
 
-        nQueue.push(spliced ? "Ainda há mais músicas, mas calma aí que ainda falta" : `Acaba aqui`)
+        nQueue.push(nQueue.length === 0 ?
+            "Vazio, como o teu crânio"
+            : spliced ?
+                "Ainda há mais músicas, mas calma aí que ainda falta"
+                : `Acaba aqui`
+        )
 
         const date = new Date()
 
