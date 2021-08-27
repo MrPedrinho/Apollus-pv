@@ -5,7 +5,11 @@ const client = new Client({intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_VOICE_ST
 
 client.on("messageCreate", async (message) => {
     if (message.content.toLowerCase().trim() === "fdp") {
-        await message.reply("Filho da puta és tu")
+        try {
+            await message.reply("Filho da puta és tu")
+        } catch (err) {
+            console.log(err)
+        }
     }
 
     const [prefix, cmd, ...props] = message.content.split(" ")
