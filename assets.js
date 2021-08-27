@@ -109,7 +109,11 @@ module.exports = {
 
     async addToQueue(song) {
         queue.push(song)
-        if (queue.length === 1) await video_player()
+        try {
+            if (queue.length === 1) await video_player()
+        } catch (err) {
+            console.log(err)
+        }
     },
 
     getQueue() {
@@ -167,7 +171,12 @@ module.exports = {
         if (!previousMusic) return false;
         queue.unshift(previousMusic)
 
-        await video_player()
+        try {
+            await video_player()
+        } catch (err) {
+            console.log(err)
+        }
+
         return true
     },
 
@@ -202,7 +211,12 @@ module.exports = {
             player.stop()
             return
         }
-        await video_player()
+
+        try {
+            await video_player()
+        } catch (err) {
+            console.log(err)
+        }
     },
 
     video_player

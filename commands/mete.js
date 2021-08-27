@@ -19,14 +19,19 @@ module.exports = {
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|\?v=)([^#&?]*).*/;
 
         if (props[0].match(regExp)) {
-            const {video_details} = await video_info(props[0])
-            song = {
-                title: video_details.title,
-                url: video_details.url,
-                duration: video_details.durationRaw,
-                thumbnail_url: video_details.thumbnail.url,
-                author: message.author,
-                channel: message.channel
+
+            try {
+                const {video_details} = await video_info(props[0])
+                song = {
+                    title: video_details.title,
+                    url: video_details.url,
+                    duration: video_details.durationRaw,
+                    thumbnail_url: video_details.thumbnail.url,
+                    author: message.author,
+                    channel: message.channel
+                }
+            } catch (err) {
+                console.log(err)
             }
 
         } else {
