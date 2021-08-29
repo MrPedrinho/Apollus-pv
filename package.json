@@ -7,11 +7,14 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js"
   },
+  "engines": {
+    "npm": "16.6"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/BobinBieber/musiquinha.git"
   },
-  "author": "",
+  "author": "Pedro Lopes",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/BobinBieber/musiquinha/issues"

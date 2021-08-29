@@ -34,4 +34,4 @@ client.on("messageCreate", async (message) => {
 
 client.on("ready", () => console.log("ready bitch"))
 
-client.login(process.env.TOKEN)
+client.login(process.env.TOKEN).then(r => console.log("logged in"))
