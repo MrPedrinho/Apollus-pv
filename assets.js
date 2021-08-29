@@ -2,7 +2,7 @@ const {createAudioPlayer, NoSubscriberBehavior, createAudioResource, AudioPlayer
     VoiceConnectionStatus, entersState
 } = require("@discordjs/voice");
 const {MessageEmbed} = require("discord.js");
-const youtubedl = require("youtube-dl-exec").raw
+const youtube = require("play-dl")
 
 let looping = false
 let queue = []
@@ -47,14 +47,14 @@ async function video_player() {
 
     //ytdl quando resolverem o bug https://github.com/fent/node-ytdl-core/issues/994
 
-    // let stream = await youtube.stream(song.url)
+    let stream = await youtube.stream(song.url)
 
-    let stream = youtubedl(song.url, {
+    /*let stream = youtubedl(song.url, {
         o: '-',
         q: '',
         f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
         r: '100K',
-    }, { stdio: ['ignore', 'pipe', 'ignore'] })
+    }, { stdio: ['ignore', 'pipe', 'ignore'] })*/
 
     // let stream = ytdl(song.url, {
     //     requestOptions: {
@@ -64,6 +64,7 @@ async function video_player() {
     //     },
     //     filter: "audioonly"
     // });
+
     try {
         await entersState(connection, VoiceConnectionStatus.Ready, 30_000);
         connection.subscribe(player);
@@ -73,8 +74,8 @@ async function video_player() {
     }
 
     // const resource = createAudioResource(stream.stream, {inputType: stream.type});
-    // const resource = createAudioResource(stream.stream, {inputType: stream.type});
-    const resource = createAudioResource(stream.stdout, {seek:0, volume: 0.5});
+    const resource = createAudioResource(stream.stream, {inputType: stream.type});
+    // const resource = createAudioResource(stream.stdout, {seek:0, volume: 0.5});
 
     player.play(resource);
     player.on(AudioPlayerStatus.Idle, () => {

@@ -5,7 +5,7 @@ module.exports = {
     async execute (message, _props) {
         try {
             const success = await playPrevious()
-            if (!success) return message.reply("Nope")
+            if (!success) return message.reply("Tentei, mas não deu")
             message.reply("Feito")
         } catch (err) {
             console.log(err)

@@ -10,9 +10,9 @@ module.exports = {
     async execute(message, props) {
         const vc = message.member.voice.channel;
 
-        if (!vc) return;
+        if (!vc) return message.reply("Tens de estar num voice chat, cabrão");
 
-        if (!props.length) return;
+        if (!props.length) return message.reply("Tens de dizer uma música, corno");
 
         let song = {}
 
@@ -38,7 +38,7 @@ module.exports = {
 
             try {
                 let video = await youtube.search(props.join(" "), {limit: 1})
-                if (!video) return;
+                if (!video) return message.reply("Parabéns, conseguiste partir o bot. Impressionante, fds");
 
                 video = video[0]
                 song = {
