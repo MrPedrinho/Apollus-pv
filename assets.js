@@ -16,8 +16,8 @@ let player = createAudioPlayer({
 
 
 async function video_player() {
-    if (!connection) return;
     const song = queue[0]
+    if (!connection) return;
 
     if (!song?.url) {
         return player.stop()
@@ -47,7 +47,35 @@ async function video_player() {
 
     //ytdl quando resolverem o bug https://github.com/fent/node-ytdl-core/issues/994
 
-    let stream = await youtube.stream(song.url)
+    try {
+        let stream = await youtube.stream(song.url)
+
+        await entersState(connection, VoiceConnectionStatus.Ready, 30_000);
+        connection.subscribe(player)
+
+        // const resource = createAudioResource(stream.stream, {inputType: stream.type});
+        const resource = createAudioResource(stream.stream, {inputType: stream.type});
+        // const resource = createAudioResource(stream.stdout, {seek:0, volume: 0.5});
+
+        player.play(resource);
+        player.on(AudioPlayerStatus.Idle, () => {
+            if (looping) {
+                video_player()
+            } else {
+                previousMusic = song
+                queue.shift()
+                video_player()
+            }
+        })
+
+    } catch (err) {
+        connection.destroy();
+        connection = undefined
+        player.stop()
+        song.channel.send('Algum fdp fez esta merda parar, metam úsica outra vez OwO. Lembra-te o YouTube não deixa que meninos vejam coisas para "adultos"')
+        throw err
+    }
+
 
     /*let stream = youtubedl(song.url, {
         o: '-',
@@ -65,28 +93,6 @@ async function video_player() {
     //     filter: "audioonly"
     // });
 
-    try {
-        await entersState(connection, VoiceConnectionStatus.Ready, 30_000);
-        connection.subscribe(player);
-    } catch (error) {
-        connection.destroy();
-        throw error;
-    }
-
-    // const resource = createAudioResource(stream.stream, {inputType: stream.type});
-    const resource = createAudioResource(stream.stream, {inputType: stream.type});
-    // const resource = createAudioResource(stream.stdout, {seek:0, volume: 0.5});
-
-    player.play(resource);
-    player.on(AudioPlayerStatus.Idle, () => {
-        if (looping) {
-            video_player()
-        } else {
-            previousMusic = song
-            queue.shift()
-            video_player()
-        }
-    })
     return true
 }
 
