@@ -8,7 +8,7 @@ module.exports = {
         if (answer.notFound) {
             message.reply("Nao conheço esse valor, para saberes os valores que podes utilizar `fdp ajuda loop`")
         } else {
-            message.reply(`O looping da música está ${answer.newStatus ? "ativado" : "desativado"}`)
+            message.reply(`O looping da música está agora ${answer.newStatus ? "ativado" : "desativado"}`)
         }
 
     }
