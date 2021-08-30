@@ -4,29 +4,47 @@ const {createAudioPlayer, NoSubscriberBehavior, createAudioResource, AudioPlayer
 const {MessageEmbed} = require("discord.js");
 const youtube = require("play-dl")
 
-let looping = false
-let queue = []
-let previousMusic = {}
-let connection
-let player = createAudioPlayer({
-    behaviors: {
-        noSubscriber: NoSubscriberBehavior.Pause,
-    },
-})
+let db = {}
+/*
+{
+    queue
+    player
+    connection
+    looping
+    previous_music
+}
+ */
 
 
-async function video_player() {
-    const song = queue[0]
-    if (!connection) return;
+function setupDb(id) {
+    db[id] = {
+        queue: [],
+        player: undefined,
+        connection: undefined,
+        looping: false,
+        previous_music: undefined
+    }
+}
 
+async function video_player(id) {
+
+
+    if (!db[id].player) setPlayer(id)
+
+
+    if (!db[id].connection) return;
+
+    const info = db[id]
+
+    const song = info.queue[0]
     if (!song?.url) {
-        return player.stop()
+        return info.player.stop()
     }
 
     const date = new Date()
 
     const embed = new MessageEmbed({
-        "title": "Prepara-te para dançar 💃🕺, está agora a tocar (Os Lusíadas, v.3-4)",
+        "title": "Prepara-te para dançar 💃🕺, está agora a tocar",
         "color": 15158332,
         "timestamp": date,
         "description": `
@@ -44,36 +62,33 @@ async function video_player() {
 
     song.channel.send({embeds: [embed]})
 
-
     //ytdl quando resolverem o bug https://github.com/fent/node-ytdl-core/issues/994
 
     try {
         let stream = await youtube.stream(song.url)
 
-        await entersState(connection, VoiceConnectionStatus.Ready, 30_000);
-        connection.subscribe(player)
+        await entersState(info.connection, VoiceConnectionStatus.Ready, 30_000);
+        info.connection.subscribe(info.player)
 
         // const resource = createAudioResource(stream.stream, {inputType: stream.type});
         const resource = createAudioResource(stream.stream, {inputType: stream.type});
         // const resource = createAudioResource(stream.stdout, {seek:0, volume: 0.5});
 
-        player.play(resource);
-        player.on(AudioPlayerStatus.Idle, () => {
-            if (looping) {
-                video_player()
-            } else {
-                previousMusic = song
-                queue.shift()
-                video_player()
+        info.player.play(resource);
+        info.player.on(AudioPlayerStatus.Idle, () => {
+            if (!info.looping) {
+                info.previousMusic = song
+                info.queue.shift()
             }
+            video_player(id)
         })
 
     } catch (err) {
         song.channel.send('Algum fdp fez esta merda parar, metam música outra vez OwO. Lembra-te o YouTube não deixa que meninos vejam coisas para "adultos"')
-        connection.destroy();
-        connection = undefined
-        player.stop()
-        queue = []
+        info.connection.destroy();
+        info.connection = undefined
+        info.player.stop()
+        info.queue = []
         throw err
     }
 
@@ -97,75 +112,87 @@ async function video_player() {
     return true
 }
 
+function setPlayer(id) {
+    db[id] = {
+        queue: db[id].queue || [],
+        player: createAudioPlayer({
+            behaviors: {
+                noSubscriber: NoSubscriberBehavior.Pause,
+            },
+        }),
+        connection: db[id].connection || undefined,
+        looping: db[id].looping || false,
+        previous_music: db[id].undefined || undefined
+    }
+}
+
+async function setConnection (message, vc) {
+    if (!db[message.guild.id]) setupDb(message.channel.guild.id)
+    try {
+        db[message.guild.id].connection = await joinVoiceChannel({
+            channelId: vc.id,
+            guildId: message.guild.id,
+            adapterCreator: message.guild.voiceAdapterCreator,
+        });
+    } catch (err) {
+        console.log(err)
+    }
+    return true
+}
+
 module.exports = {
-    player,
+    setPlayer,
 
-    getConnection () {return connection},
+    getPlayer(id) {return db[id].player},
 
-    async setConnection (message, vc) {
-        try {
-            connection = await joinVoiceChannel({
-                channelId: vc.id,
-                guildId: message.guild.id,
-                adapterCreator: message.guild.voiceAdapterCreator,
-            });
-        } catch (err) {
-            console.log(err)
-        }
-        return true
-    },
+    getConnection (id) {return db[id].connection},
+
+    setConnection,
 
     async addToQueue(song) {
-        queue.push(song)
+        if (!db[song.channel.guild.id]) setupDb(song.channel.guild.id)
+        db[song.channel.guild.id].queue.push(song)
         try {
-            if (queue.length === 1) await video_player()
+            if (db[song.channel.guild.id].queue.length === 1) await video_player(song.channel.guild.id)
         } catch (err) {
             console.log(err)
         }
     },
 
-    getQueue() {
-        return queue
+    getQueue(id) {
+        return db[id].queue
     },
 
-    setLooping (val) {
+    setLooping (val, id) {
         if (!val) {
-            looping = !looping
-            return {newStatus: looping}
+            db[id].looping = !db[id].looping
+            return {newStatus: db[id].looping}
         }
         const yesValues = ["sim", "s", "yes", "true"]
         const noValues = ["nao", "não", "n", "no", "false"]
 
         if (yesValues.indexOf(val.toLowerCase()) > -1) {
-            looping = true
+            db[id].looping = true
         } else if (noValues.indexOf(val.toLowerCase()) > -1) {
-            looping = false
+            db[id].looping = false
         } else {
             return {notFound: true}
         }
-        return {newStatus: looping}
+        return {newStatus: db[id].looping}
     },
 
-    shiftQueue () {
-        queue.shift()
+    resetQueue(id) {
+        db[id].queue = []
     },
 
-    getFirstItem() {
-        return queue[0]
-    },
-
-    resetQueue() {
-        queue = []
-    },
-
-    removeSong(query) {
+    removeSong(query, id) {
         let found = false
         let answer
-        queue.slice(1).forEach((song, idx) => {
+        db[id].queue.slice(1).forEach((song, idx) => {
             if (found) return;
 
             if (song.title.toLowerCase().search(query.toLowerCase().trim()) > -1) {
-                answer = queue.splice(idx+1, 1)
+                answer = db[id].queue.splice(idx+1, 1)
                 found = true
             }
         })
@@ -175,12 +202,12 @@ module.exports = {
         return answer[0]
     },
 
-    async playPrevious() {
-        if (!previousMusic) return false;
-        queue.unshift(previousMusic)
+    async playPrevious(id) {
+        if (!db[id].previousMusic) return false;
+        db[id].queue.unshift(db[id].previousMusic)
 
         try {
-            await video_player()
+            await video_player(id)
         } catch (err) {
             console.log(err)
         }
@@ -188,10 +215,10 @@ module.exports = {
         return true
     },
 
-    async skipSong(message) {
-        const song = queue[0]
+    async skipSong(message, id) {
+        const song = db[id].queue[0]
 
-        previousMusic = song
+        db[id].previousMusic = song
 
         const date = new Date()
 
@@ -214,14 +241,14 @@ module.exports = {
 
         song.channel.send({embeds: [embed]})
 
-        queue.shift()
-        if (queue.length === 0) {
-            player.stop()
+        db[id].queue.shift()
+        if (db[id].queue.length === 0) {
+            db[id].player.stop()
             return
         }
 
         try {
-            await video_player()
+            await video_player(id)
         } catch (err) {
             console.log(err)
         }

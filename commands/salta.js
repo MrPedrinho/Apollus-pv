@@ -6,7 +6,7 @@ module.exports = {
 
     async execute (message, _props) {
         try {
-            await skipSong(message)
+            await skipSong(message, message.guild.id)
         } catch (err) {
             console.log(err)
         }

@@ -1,11 +1,11 @@
-const {resetQueue, player} = require("../assets");
+const {resetQueue, getPlayer} = require("../assets");
 
 module.exports = {
     help: "Limpa a playlist",
 
     async execute (message, _props) {
         message.reply("Okok")
-        resetQueue()
-        player.stop()
+        resetQueue(message.guild.id)
+        getPlayer(message.guild.id).stop()
     }
 }

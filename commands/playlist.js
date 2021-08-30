@@ -5,7 +5,7 @@ module.exports = {
     help: 'Playlist...',
 
     async execute (message, _props) {
-        const queue = getQueue()
+        const queue = getQueue(message.guild.id)
         const spliced = queue.length > 10
 
         const nQueue = queue.slice(0, 10).map((song, idx) => {
