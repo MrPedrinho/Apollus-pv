@@ -69,11 +69,11 @@ async function video_player() {
         })
 
     } catch (err) {
+        song.channel.send('Algum fdp fez esta merda parar, metam música outra vez OwO. Lembra-te o YouTube não deixa que meninos vejam coisas para "adultos"')
         connection.destroy();
         connection = undefined
         player.stop()
         queue = []
-        song.channel.send('Algum fdp fez esta merda parar, metam música outra vez OwO. Lembra-te o YouTube não deixa que meninos vejam coisas para "adultos"')
         throw err
     }
 
