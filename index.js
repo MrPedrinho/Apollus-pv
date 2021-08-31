@@ -1,4 +1,5 @@
 const { Client } = require("discord.js")
+const fs = require("fs")
 require("dotenv").config()
 
 const client = new Client({intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"]})
@@ -23,15 +24,24 @@ client.on("messageCreate", async (message) => {
     if (!cmd) return;
 
     try {
+        console.log(cmd.toLowerCase())
+        if (!fs.existsSync(`./commands/${cmd.toLowerCase()}.js`)) {
+            return await message.reply("És estúpido ou fazes-te? Isso não é um comando, porra")
+        }
+    } catch (e) {
+        throw (e)
+    }
+
+    try {
         const command = require(`./commands/${cmd.toLowerCase()}.js`);
         await command.execute(message, props)
     } catch (err){
         console.log(err)
-        await message.reply("És estúpido ou fazes-te? Isso não é um comando, porra")
+        await message.reply("Conseguiste partir o bot, parabéns")
     }
 
 })
 
 client.on("ready", () => console.log("ready bitch"))
 
-client.login(process.env.TOKEN).then(r => console.log("logged in"))
+client.login(process.env.TOKEN).then(_r => console.log("logged in"))
