@@ -1,4 +1,4 @@
-const {getConnection, cleanQueue} = require("../assets");
+const {getConnection, cleanQueue, setLooping} = require("../assets");
 
 module.exports = {
     help: 'A música está-te a irritar? Mata o bot',
@@ -8,6 +8,7 @@ module.exports = {
             message.reply("Okok")
             getConnection(message.guild.id).destroy()
             cleanQueue(message.guild.id)
+            setLooping("n", message.guild.id)
         } catch (err) {
             throw (err)
         }
