@@ -16,16 +16,6 @@ let db = {}
  */
 
 
-function setupDb(id) {
-    db[id] = {
-        queue: [],
-        player: undefined,
-        connection: undefined,
-        looping: false,
-        previous_music: undefined
-    }
-}
-
 async function video_player(id) {
 
     if (!db[id].player) setPlayer(id)
@@ -116,20 +106,20 @@ async function video_player(id) {
 
 function setPlayer(id) {
     db[id] = {
-        queue: db[id].queue || [],
-        player: createAudioPlayer({
+        queue: db[id]?.queue || [],
+        player: db[id]?.player || createAudioPlayer({
             behaviors: {
                 noSubscriber: NoSubscriberBehavior.Pause,
             },
         }),
-        connection: db[id].connection || undefined,
-        looping: db[id].looping || false,
-        previous_music: db[id].undefined || undefined
+        connection: db[id]?.connection || undefined,
+        looping: db[id]?.looping || false,
+        previous_music: db[id]?.undefined || undefined
     }
 }
 
 async function setConnection (message, vc) {
-    if (!db[message.guild.id]) setupDb(message.channel.guild.id)
+    if (!db[message.guild.id]) setPlayer(message.channel.guild.id)
     try {
         db[message.guild.id].connection = await joinVoiceChannel({
             channelId: vc.id,
@@ -183,8 +173,9 @@ module.exports = {
         return {newStatus: db[id].looping}
     },
 
-    resetQueue(id) {
+    cleanQueue(id) {
         db[id].queue = []
+        db[id].player.stop()
     },
 
     removeSong(query, id) {
@@ -252,10 +243,6 @@ module.exports = {
         song.channel.send({embeds: [embed]})
 
         db[id].queue.shift()
-        if (db[id].queue.length === 0) {
-            db[id].player.stop()
-            return
-        }
 
         try {
             await video_player(id)

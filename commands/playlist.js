@@ -19,7 +19,7 @@ module.exports = {
         nQueue.push(nQueue.length === 0 ?
             "Vazio, como o teu crânio"
             : spliced ?
-                "Ainda há mais músicas, mas calma aí que ainda falta"
+                "Ainda há mais músicas, mas calma aí que ainda falta algum tempo"
                 : `Acaba aqui`
         )
 

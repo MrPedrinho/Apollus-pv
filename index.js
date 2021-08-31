@@ -1,5 +1,6 @@
 const { Client } = require("discord.js")
 const fs = require("fs")
+const {setPlayer} = require("./assets");
 require("dotenv").config()
 
 const client = new Client({intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"]})
@@ -13,6 +14,8 @@ client.on("messageCreate", async (message) => {
         }
     }
 
+    setPlayer(message.guild.id)
+
     const [prefix, cmd, ...props] = message.content.split(" ")
 
     client.user.setActivity("fdp ajuda", {type: "PLAYING"})
@@ -24,7 +27,6 @@ client.on("messageCreate", async (message) => {
     if (!cmd) return;
 
     try {
-        console.log(cmd.toLowerCase())
         if (!fs.existsSync(`./commands/${cmd.toLowerCase()}.js`)) {
             return await message.reply("És estúpido ou fazes-te? Isso não é um comando, porra")
         }
