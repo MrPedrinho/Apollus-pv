@@ -24,7 +24,6 @@ client.on("messageCreate", async (message) => {
     if (!cmd) return;
 
     try {
-        console.log(cmd.toLowerCase())
         if (!fs.existsSync(`./commands/${cmd.toLowerCase()}.js`)) {
             return await message.reply("És estúpido ou fazes-te? Isso não é um comando, porra")
         }
