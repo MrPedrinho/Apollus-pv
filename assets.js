@@ -63,11 +63,8 @@ async function video_player(id) {
         const resource = createAudioResource(stream.stream, {inputType: stream.type});
         // const resource = createAudioResource(stream.stdout, {seek:0, volume: 0.5});
 
-        let ran = false
         info.player.play(resource);
         info.player.on(AudioPlayerStatus.Idle, () => {
-            if (ran) return
-            ran = true
             if (!info.looping) {
                 info.previousMusic = song
                 info.queue.shift()
