@@ -5,6 +5,7 @@ module.exports = {
     help: "Remove uma música da playlist",
 
     async execute (message, props) {
+
         const removedSong = removeSong(props.join(" "), message.guild.id)
         if (!removedSong) {
             return message.reply("Não encontrei nada")

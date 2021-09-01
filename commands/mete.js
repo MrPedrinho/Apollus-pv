@@ -8,6 +8,7 @@ module.exports = {
     help: 'Adiciona uma música à playlist',
 
     async execute(message, props) {
+
         const vc = message.member.voice.channel;
 
         if (!vc) return message.reply("Tens de estar num voice chat, cabrão");
@@ -28,7 +29,7 @@ module.exports = {
                     duration: video_details.durationRaw,
                     thumbnail_url: video_details.thumbnail.url,
                     author: message.author,
-                    channel: message.channel
+                    channel: message.channel,
                 }
             } catch (err) {
                 console.log(err)

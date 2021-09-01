@@ -1,0 +1,12 @@
+const {addBan} = require("../assets");
+module.exports = {
+    help: "Ban de usar o bot",
+    async execute (message, props) {
+        const success = await addBan(message)
+        if (success.ok) {
+            message.reply("Feito")
+        } else {
+            message.reply(success.error)
+        }
+    }
+}

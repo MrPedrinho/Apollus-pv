@@ -1,8 +1,17 @@
+require("dotenv").config()
 const {createAudioPlayer, NoSubscriberBehavior, createAudioResource, AudioPlayerStatus, joinVoiceChannel,
     VoiceConnectionStatus, entersState
 } = require("@discordjs/voice");
-const {MessageEmbed} = require("discord.js");
+const {MessageEmbed, Permissions} = require("discord.js");
 const youtube = require("play-dl")
+/*
+const {MongoClient} = require("mongodb")
+const mongoClient = new MongoClient(process.env.MONGO_URI)
+
+let mongo
+mongoClient.connect().then(client => mongo = client.db("Main").collection("ServerSettings"));
+*/
+
 
 let db = {}
 /*
@@ -12,24 +21,18 @@ let db = {}
     connection
     looping
     previous_music
+    idler
 }
  */
 
+async function checkBanned(message) {
+    const checkBanned = await mongo.findOne({guild_id: message.guild.id})
+    return checkBanned?.bans?.indexOf(message.member.id) > -1
+}
 
-async function video_player(id) {
-
-    if (!db[id].player) setPlayer(id)
-
-
-    if (!db[id].connection) return;
-
-    const info = db[id]
-
-    const song = info.queue[0]
-    if (!song?.url) {
-        return info.player.stop()
-    }
-
+async function play(song) {
+    if (!song?.url) return
+    const id = song.channel.guild.id
     const date = new Date()
 
     const embed = new MessageEmbed({
@@ -51,26 +54,34 @@ async function video_player(id) {
 
     song.channel.send({embeds: [embed]})
 
+    const stream = await youtube.stream(song.url)
+    await entersState(db[id].connection, VoiceConnectionStatus.Ready, 30_000);
+    db[id].connection.subscribe(db[id].player)
+    const resource = createAudioResource(stream.stream, {inputType: stream.type});
+    db[id].player.play(resource);
+}
+
+async function video_player(id) {
+
+    if (!db[id].player) setPlayer(id)
+
+    if (!db[id].connection) return;
+
+    const info = db[id]
+
+    const song = info.queue[0]
+
+    if (!song?.url) {
+        return db[id].player.stop()
+    }
+
+
     //ytdl quando resolverem o bug https://github.com/fent/node-ytdl-core/issues/994
 
     try {
-        let stream = await youtube.stream(song.url)
-
-        await entersState(info.connection, VoiceConnectionStatus.Ready, 30_000);
-        info.connection.subscribe(info.player)
-
+        await play(song)
         // const resource = createAudioResource(stream.stream, {inputType: stream.type});
-        const resource = createAudioResource(stream.stream, {inputType: stream.type});
         // const resource = createAudioResource(stream.stdout, {seek:0, volume: 0.5});
-
-        info.player.play(resource);
-        info.player.on(AudioPlayerStatus.Idle, () => {
-            if (!info.looping) {
-                info.previousMusic = song
-                info.queue.shift()
-            }
-            video_player(id)
-        })
 
     } catch (err) {
         song.channel.send('Algum fdp fez esta merda parar, metam música outra vez OwO. Lembra-te o YouTube não deixa que meninos vejam coisas para "adultos"')
@@ -111,7 +122,17 @@ function setPlayer(id) {
         }),
         connection: db[id]?.connection || undefined,
         looping: db[id]?.looping || false,
-        previous_music: db[id]?.undefined || undefined
+        previous_music: db[id]?.undefined || undefined,
+        ...db[id]
+    }
+    if (!db[id].idler) {
+        db[id].idler = db[id].player.on(AudioPlayerStatus.Idle, async () => {
+            if (!db[id].looping) {
+                db[id].previousMusic = db[id].queue[0]
+                db[id].queue.shift()
+            }
+            await play(db[id].queue[0])
+        })
     }
 }
 
@@ -139,7 +160,7 @@ module.exports = {
     setConnection,
 
     async addToQueue(song) {
-        if (!db[song.channel.guild.id]) setupDb(song.channel.guild.id)
+        if (!db[song.channel.guild.id]) setPlayer(song.channel.guild.id)
         db[song.channel.guild.id].queue.push(song)
         try {
             if (db[song.channel.guild.id].queue.length === 1) await video_player(song.channel.guild.id)
@@ -169,6 +190,8 @@ module.exports = {
         }
         return {newStatus: db[id].looping}
     },
+
+    checkBanned,
 
     cleanQueue(id) {
         db[id].queue = []
@@ -213,6 +236,13 @@ module.exports = {
         }
     },
 
+    async kill(id) {
+        db[id].connection.destroy()
+        db[id].queue = []
+        db[id].player.stop()
+        db[id].looping = false
+    },
+
     async skipSong(message, id) {
         const song = db[id].queue[0]
 
@@ -245,6 +275,44 @@ module.exports = {
             await video_player(id)
         } catch (err) {
             console.log(err)
+        }
+    },
+
+    async addBan (message) {
+        if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return {ok: false, error: "Não tens perms, corno"}
+
+        const guild_id = message.guild.id
+        const users = message.mentions.members
+        const data = await mongo.findOne({guild_id})
+
+        if (data) {
+            let passedUsers = []
+            users.filter(u => !u.permissions.has(Permissions.FLAGS.ADMINISTRATOR)).map(u => u.id).forEach(u => {
+                if (data.bans.indexOf(u) === -1) {
+                    passedUsers.push(u)
+                }
+            })
+            const updated = await mongo.findOneAndUpdate({guild_id}, {$push: {bans: {$each: passedUsers}}})
+            if (updated) return {ok: true}
+        } else {
+            const newData = await mongo.insertOne({guild_id, bans: users.filter(u => !u.permissions.has(Permissions.FLAGS.ADMINISTRATOR))})
+            if (newData) return {ok: true}
+        }
+    },
+
+    async removeBan (message) {
+        if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return {ok: false, error: "Não tens perms, corno"}
+
+        const guild_id = message.guild.id
+        console.log(message.mentions.users)
+        const users = message.mentions.users.map(u => u.id)
+        const data = await mongo.findOne({guild_id})
+
+        if (data) {
+            const updated = await mongo.findOneAndUpdate({guild_id}, {$pull: {bans: {$in: users}}})
+            if (updated) return {ok: true}
+        } else {
+            return {ok: false, error: "Não há maltinha banida"}
         }
     },
 
