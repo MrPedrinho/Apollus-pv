@@ -2,16 +2,8 @@ require("dotenv").config()
 const {createAudioPlayer, NoSubscriberBehavior, createAudioResource, AudioPlayerStatus, joinVoiceChannel,
     VoiceConnectionStatus, entersState
 } = require("@discordjs/voice");
-const {MessageEmbed, Permissions} = require("discord.js");
+const {MessageEmbed} = require("discord.js");
 const youtube = require("play-dl")
-/*
-const {MongoClient} = require("mongodb")
-const mongoClient = new MongoClient(process.env.MONGO_URI)
-
-let mongo
-mongoClient.connect().then(client => mongo = client.db("Main").collection("ServerSettings"));
-*/
-
 
 let db = {}
 /*
@@ -24,11 +16,6 @@ let db = {}
     idler
 }
  */
-
-async function checkBanned(message) {
-    const checkBanned = await mongo.findOne({guild_id: message.guild.id})
-    return checkBanned?.bans?.indexOf(message.member.id) > -1
-}
 
 async function play(song) {
     if (!song?.url) return
@@ -138,6 +125,7 @@ function setPlayer(id) {
 
 async function setConnection (message, vc) {
     if (!db[message.guild.id]) setPlayer(message.channel.guild.id)
+
     try {
         db[message.guild.id].connection = await joinVoiceChannel({
             channelId: vc.id,
@@ -191,8 +179,6 @@ module.exports = {
         return {newStatus: db[id].looping}
     },
 
-    checkBanned,
-
     cleanQueue(id) {
         db[id].queue = []
         db[id].player.stop()
@@ -238,6 +224,7 @@ module.exports = {
 
     async kill(id) {
         db[id].connection.destroy()
+        db[id].connection = undefined
         db[id].queue = []
         db[id].player.stop()
         db[id].looping = false
@@ -275,44 +262,6 @@ module.exports = {
             await video_player(id)
         } catch (err) {
             console.log(err)
-        }
-    },
-
-    async addBan (message) {
-        if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return {ok: false, error: "Não tens perms, corno"}
-
-        const guild_id = message.guild.id
-        const users = message.mentions.members
-        const data = await mongo.findOne({guild_id})
-
-        if (data) {
-            let passedUsers = []
-            users.filter(u => !u.permissions.has(Permissions.FLAGS.ADMINISTRATOR)).map(u => u.id).forEach(u => {
-                if (data.bans.indexOf(u) === -1) {
-                    passedUsers.push(u)
-                }
-            })
-            const updated = await mongo.findOneAndUpdate({guild_id}, {$push: {bans: {$each: passedUsers}}})
-            if (updated) return {ok: true}
-        } else {
-            const newData = await mongo.insertOne({guild_id, bans: users.filter(u => !u.permissions.has(Permissions.FLAGS.ADMINISTRATOR))})
-            if (newData) return {ok: true}
-        }
-    },
-
-    async removeBan (message) {
-        if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return {ok: false, error: "Não tens perms, corno"}
-
-        const guild_id = message.guild.id
-        console.log(message.mentions.users)
-        const users = message.mentions.users.map(u => u.id)
-        const data = await mongo.findOne({guild_id})
-
-        if (data) {
-            const updated = await mongo.findOneAndUpdate({guild_id}, {$pull: {bans: {$in: users}}})
-            if (updated) return {ok: true}
-        } else {
-            return {ok: false, error: "Não há maltinha banida"}
         }
     },
 
