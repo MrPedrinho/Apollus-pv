@@ -1,11 +1,10 @@
 const youtube = require('play-dl')
-const {video_info} = require("play-dl");
-
-const {addToQueue, setConnection} = require("../assets")
+const {video_info, yt_validate} = require("play-dl");
+const {addToQueue, setConnection, playPlaylist} = require("../assets")
 const {MessageEmbed} = require("discord.js");
 
 module.exports = {
-    help: 'Adiciona uma música à playlist',
+    help: 'Adiciona uma música à playlist. Se colocares o link de uma playlist, podes meter `noshuffle` no fim para não dar shuffle à playlist',
 
     async execute(message, props) {
 
@@ -17,12 +16,12 @@ module.exports = {
 
         let song = {}
 
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|\?v=)([^#&?]*).*/;
+        let valid = yt_validate(props[0])
 
-        if (props[0].match(regExp)) {
-
+        await setConnection(message, vc)
+        if (valid === "video") {
             try {
-                const {video_details} = await video_info(props[0])
+                const {video_details} = await video_info(props[0], {cookie: process.env.COOKIES})
                 song = {
                     title: video_details.title,
                     url: video_details.url,
@@ -35,6 +34,10 @@ module.exports = {
                 console.log(err)
             }
 
+        } else if (valid === "playlist") {
+            await setConnection(message, vc)
+            await playPlaylist(message.guild.id, message,props[0], [props[1]])
+            return
         } else {
 
             try {
@@ -78,7 +81,6 @@ module.exports = {
         message.channel.send({embeds: [embed]})
 
         try {
-            await setConnection(message, vc)
             await addToQueue(song)
         } catch (err) {
             console.log(err)

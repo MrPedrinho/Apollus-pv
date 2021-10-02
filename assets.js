@@ -15,9 +15,7 @@ let db = {}
     previous_music
     idler
 }
- */
-
-async function play(song) {
+ */async function play(song) {
     if (!song?.url) return
     const id = song.channel.guild.id
     const date = new Date()
@@ -27,6 +25,8 @@ async function play(song) {
         "color": 15158332,
         "timestamp": date,
         "description": `
+
+
                 [${song.title}](${song.url})
                 **Duração** - [${song.duration}](${song.url})
             `,
@@ -41,7 +41,7 @@ async function play(song) {
 
     song.channel.send({embeds: [embed]})
 
-    const stream = await youtube.stream(song.url)
+    const stream = await youtube.stream(song.url, {cookie: process.env.COOKIES})
     await entersState(db[id].connection, VoiceConnectionStatus.Ready, 30_000);
     db[id].connection.subscribe(db[id].player)
     const resource = createAudioResource(stream.stream, {inputType: stream.type});
@@ -71,7 +71,7 @@ async function video_player(id) {
         // const resource = createAudioResource(stream.stdout, {seek:0, volume: 0.5});
 
     } catch (err) {
-        song.channel.send('Algum fdp fez esta merda parar, metam música outra vez OwO. Lembra-te o YouTube não deixa que meninos vejam coisas para "adultos"')
+        song.channel.send('Algum fdp fez esta merda parar')
         info.connection.destroy();
         info.connection = undefined
         info.player.stop()
@@ -138,6 +138,80 @@ async function setConnection (message, vc) {
     return true
 }
 
+async function playPlaylist(id, message, url, options) {
+
+    cleanQueue(id)
+    const playlist = await youtube.playlist_info(url)
+    const videos = []
+
+    playlist.videos.forEach(v => {
+        videos.push({
+            title: v.title,
+            url: v.url,
+            duration: v.durationRaw,
+            thumbnail_url: v.thumbnail.url,
+            author: message.author,
+            channel: message.channel
+        })
+    })
+
+    function shuffleArray(array) {
+        for (var i = array.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+    }
+
+    if (options[0]?.toLowerCase() !== "noshuffle") {
+        shuffleArray(videos)
+    }
+
+    const date = new Date()
+
+    const embed = new MessageEmbed({
+        "title": "Playlist adicionada",
+        "color": 15158332,
+        "timestamp": date,
+        "description": options[1] === "hidden" ?
+            `
+                **${playlist.title}**
+                Nº de Músicas: ${playlist.total_videos}
+            `
+            : `
+                [${playlist.title}](${playlist.url})
+                **Nº de Músicas**: ${playlist.total_videos}
+            `,
+        "thumbnail": {
+            "url": playlist.thumbnail.url
+        },
+        "footer": {
+            "icon_url": message.author.displayAvatarURL(),
+            "text": `Playlist colocada por ${message.author.username}#${message.author.discriminator}`
+        }
+    })
+
+    message.channel.send({embeds: [embed]})
+
+    videos.forEach(v => addToQueue(v))
+}
+
+async function addToQueue(song) {
+    if (!db[song.channel.guild.id]) setPlayer(song.channel.guild.id)
+    db[song.channel.guild.id].queue.push(song)
+    try {
+        if (db[song.channel.guild.id].queue.length === 1) await video_player(song.channel.guild.id)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+function cleanQueue(id) {
+    db[id].queue = []
+    db[id].player.stop()
+}
+
 module.exports = {
     setPlayer,
 
@@ -147,15 +221,7 @@ module.exports = {
 
     setConnection,
 
-    async addToQueue(song) {
-        if (!db[song.channel.guild.id]) setPlayer(song.channel.guild.id)
-        db[song.channel.guild.id].queue.push(song)
-        try {
-            if (db[song.channel.guild.id].queue.length === 1) await video_player(song.channel.guild.id)
-        } catch (err) {
-            console.log(err)
-        }
-    },
+    addToQueue,
 
     getQueue(id) {
         return db[id].queue
@@ -179,10 +245,9 @@ module.exports = {
         return {newStatus: db[id].looping}
     },
 
-    cleanQueue(id) {
-        db[id].queue = []
-        db[id].player.stop()
-    },
+    playPlaylist,
+
+    cleanQueue,
 
     removeSong(query, id) {
         let found = false
@@ -199,6 +264,18 @@ module.exports = {
             return false
         }
         return answer[0]
+    },
+
+    async playNow(id, song) {
+        db[id].queue.unshift(song)
+
+        try {
+            await video_player(id)
+        } catch (err) {
+            console.log(err)
+        }
+
+        return true
     },
 
     async playPrevious(id) {
