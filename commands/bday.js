@@ -2,7 +2,8 @@ const {setConnection, playNow} = require("../assets");
 const {video_info} = require("play-dl");
 
 module.exports = {
-    help: "Feliz Aniversário! Menciona o aniversariante para ser ainda melhor",
+    help: "Feliz Aniversário!",
+    usage: "fdp bday <@aniversariante (opcional)>",
 
     async execute (message, _props) {
         const vc = message.member.voice.channel;

@@ -1,6 +1,7 @@
 const {setLooping} = require("../assets");
 module.exports = {
-    help: "Ativa o loop da música - valores aceitos `sim s yes true` e `não nao n no false`",
+    help: "Control o loop da música. Valores aceitos `sim s yes true` e `não nao n no false`",
+    usage: "fdp ajuda <valor (opcional)>",
 
     async execute (message, props) {
 

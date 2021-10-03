@@ -3,6 +3,7 @@ const {skipSong} = require("../assets")
 
 module.exports = {
     help: 'Skips ilimitados, sem premium',
+    usage: "fdp salta",
 
     async execute (message, _props) {
 

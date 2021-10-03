@@ -2,7 +2,8 @@ const {getQueue} = require("../assets");
 const {MessageEmbed} = require("discord.js");
 
 module.exports = {
-    help: 'Playlist...',
+    help: 'Mostra a playlist atual',
+    usage: "fdp playlist",
 
     async execute (message, _props) {
         const queue = getQueue(message.guild.id)

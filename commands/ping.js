@@ -1,6 +1,7 @@
 
 module.exports = {
     help: "Atreve-te",
+    usage: "fdp ping",
 
     async execute(message, _props) {
         try {

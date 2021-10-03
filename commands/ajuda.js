@@ -13,7 +13,7 @@ commandFiles.forEach((file) => {
     } else {
         const cmd = require(`${__dirname}/${file.toLowerCase()}`)
         help_general.push(`\`fdp ${file.split(".")[0]}\` - ${cmd.help}`)
-        helps[file.split(".")[0]] = `\`fdp ${file.split(".")[0]}\` - ${cmd.help}`
+        helps[file.split(".")[0]] = `\`${cmd.usage}\` - ${cmd.help}`
     }
 })
 
@@ -52,7 +52,7 @@ module.exports = {
             "title": "Aqui está, agradece-me depois",
             "color": 15158332,
             "timestamp": date,
-            "description": help_general.join("\n"),
+            "description": help_general.join("\n\n"),
             "footer": {
                 "icon_url": message.author.displayAvatarURL(),
                 "text": `Pedido por ${message.author.username}#${message.author.discriminator}`

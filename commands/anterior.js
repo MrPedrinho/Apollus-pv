@@ -2,6 +2,8 @@ const {playPrevious} = require("../assets");
 
 module.exports = {
     help: "Mete a música anterior",
+    usage: "fdp anterior",
+
     async execute (message, _props) {
 
         try {

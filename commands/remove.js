@@ -2,7 +2,8 @@ const {removeSong} = require("../assets");
 const {MessageEmbed} = require("discord.js");
 
 module.exports = {
-    help: "Remove uma música da playlist",
+    help: "Remove uma música da playlist. Basta uma parte do nome da música.",
+    usage: "fdp remove <música>",
 
     async execute (message, props) {
 

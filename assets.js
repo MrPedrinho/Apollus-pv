@@ -138,9 +138,17 @@ async function setConnection (message, vc) {
     return true
 }
 
+function shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+}
+
 async function playPlaylist(id, message, url, options) {
 
-    cleanQueue(id)
     const playlist = await youtube.playlist_info(url)
     const videos = []
 
@@ -154,15 +162,6 @@ async function playPlaylist(id, message, url, options) {
             channel: message.channel
         })
     })
-
-    function shuffleArray(array) {
-        for (var i = array.length - 1; i > 0; i--) {
-            var j = Math.floor(Math.random() * (i + 1));
-            var temp = array[i];
-            array[i] = array[j];
-            array[j] = temp;
-        }
-    }
 
     if (options[0]?.toLowerCase() !== "noshuffle") {
         shuffleArray(videos)
@@ -194,7 +193,9 @@ async function playPlaylist(id, message, url, options) {
 
     message.channel.send({embeds: [embed]})
 
-    videos.forEach(v => addToQueue(v))
+    for (const v of videos) {
+        await addToQueue(v);
+    }
 }
 
 async function addToQueue(song) {
@@ -222,6 +223,8 @@ module.exports = {
     setConnection,
 
     addToQueue,
+
+    shuffleArray,
 
     getQueue(id) {
         return db[id].queue

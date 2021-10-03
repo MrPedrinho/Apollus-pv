@@ -2,6 +2,7 @@
 
 module.exports = {
     help: "Playlist de natal",
+    usage: "fdp natal"
 
     async execute (message, _props) {
 

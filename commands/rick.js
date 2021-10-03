@@ -3,6 +3,7 @@ const {video_info} = require("play-dl");
 
 module.exports = {
     help: "?",
+    usage: "fdp rick",
 
     async execute (message, _props) {
         const vc = message.member.voice.channel;
