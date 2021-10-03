@@ -15,7 +15,9 @@ async function execute (message, props) {
     if (valid === "track") {
         const track = await spotify(props[0])
 
-        let searched = await play.search(`${track.name}`, { limit : 1 })
+        console.log(track)
+
+        let searched = await play.search(`${track.name} ${track.artists.map(artist => artist.name + " ")}`, { limit : 1 })
         searched = searched[0]
 
         const song = {
@@ -57,7 +59,7 @@ async function execute (message, props) {
         let confirmMessage = await message.channel.send(`Estou a procurar as músicas - ${progress}/${data.tracksCount || data.trackCount}`)
 
         for (const v of data.page(1)) {
-            let song = await play.search(`${v.name}`, {limit: 1})
+            let song = await play.search(`${v.name} ${v.artists.map(artist => artist.name + " ")}`, {limit: 1})
             song = song[0]
 
             const convertedSong = {
