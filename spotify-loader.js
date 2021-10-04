@@ -15,8 +15,6 @@ async function execute (message, props) {
     if (valid === "track") {
         const track = await spotify(props[0])
 
-        console.log(track)
-
         let searched = await play.search(`${track.name} ${track.artists.map(artist => artist.name + " ")}`, { limit : 1 })
         searched = searched[0]
 
@@ -24,6 +22,7 @@ async function execute (message, props) {
             title: searched.title,
             url: searched.url,
             duration: searched.durationRaw,
+            durationSec: parseInt(searched.durationInSec),
             thumbnail_url: searched.thumbnail.url,
             author: message.author,
             channel: message.channel
@@ -66,6 +65,7 @@ async function execute (message, props) {
                 title: song.title,
                 url: song.url,
                 duration: song.durationRaw,
+                durationSec: parseInt(song.durationInSec),
                 thumbnail_url: song.thumbnail.url,
                 author: message.author,
                 channel: message.channel

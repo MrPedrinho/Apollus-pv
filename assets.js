@@ -25,8 +25,6 @@ let db = {}
         "color": 15158332,
         "timestamp": date,
         "description": `
-
-
                 [${song.title}](${song.url})
                 **Duração** - [${song.duration}](${song.url})
             `,
@@ -62,13 +60,8 @@ async function video_player(id) {
         return db[id].player.stop()
     }
 
-
-    //ytdl quando resolverem o bug https://github.com/fent/node-ytdl-core/issues/994
-
     try {
         await play(song)
-        // const resource = createAudioResource(stream.stream, {inputType: stream.type});
-        // const resource = createAudioResource(stream.stdout, {seek:0, volume: 0.5});
 
     } catch (err) {
         song.channel.send('Algum fdp fez esta merda parar')
@@ -78,23 +71,6 @@ async function video_player(id) {
         info.queue = []
         throw err
     }
-
-
-    /*let stream = youtubedl(song.url, {
-        o: '-',
-        q: '',
-        f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
-        r: '100K',
-    }, { stdio: ['ignore', 'pipe', 'ignore'] })*/
-
-    // let stream = ytdl(song.url, {
-    //     requestOptions: {
-    //         headers: {
-    //             cookie: "CONSENT=YES+srp.gws-20210728-0-RC1.en+FX+460; VISITOR_INFO1_LIVE=wpCXfTzs0Eo; LOGIN_INFO=AFmmF2swRAIgbZkusEfqeGjN-FSZugvXQGno1QbdED4akJ69vfFm7OACIFhD_B8ikOghb90Atmiiw5BUriaxwG8C21XJPYvzuaPQ:QUQ3MjNmd0ZKbEJjTVI4M3h0MFBoS2t5UllrU1NLX2RIbkxySlpTaXpUVG9ucS1WT3dSYmZaaHZBcXVNeU8weFFIazdtdy12aFFseHNhSGg2YVhHNG1aaGppcmRtLTZobWptNDNMSldJbFlOaGNMZ1hwdlRXeDU4SHJhTzlDb0tuVjJ0b1czOTJFNjdtSFcwQ090b24zbEQ5M29sQUZmZk53; _gcl_au=1.1.1413043797.1628246279; NID=221=jTJQAAl-S2IKA7e841W26kNPBjOxpXeDaonYS61WjYVFWG22R3gAZXhTdbg73oF7UtVzTXoyqspnsgTAa5qPkLb0_Dd2XsBCOHrO75czEykhGRYfYbk8YTfTeFwBeUZerWM90oFr-zF2demFSSko8jQqHIdySCmt8usfeDDS6kQ; PREF=f6=480&hl=en&tz=Europe.Lisbon&volume=100; SID=BAhxd_wgAb2aQML44FR-aizdrPkmEQGA0CFzUUlUUKAPnDJaYVEb8QB75MblkT7hMqvrUw.; __Secure-1PSID=BAhxd_wgAb2aQML44FR-aizdrPkmEQGA0CFzUUlUUKAPnDJaGMC2wa_9W7LXvS5XYsNroQ.; __Secure-3PSID=BAhxd_wgAb2aQML44FR-aizdrPkmEQGA0CFzUUlUUKAPnDJaddHrTJtzqO-0PfME_gHQJQ.; HSID=AYoh8V2PO7qc5c0ks; SSID=AweXtdgTGog2yBDr_; APISID=XEIlUn6XkZcipHN1/AJz6Fhpw-wz2Dqky9; SAPISID=popoq6RzctHrINAS/A_rLJanlR8a_XIELp; __Secure-1PAPISID=popoq6RzctHrINAS/A_rLJanlR8a_XIELp; __Secure-3PAPISID=popoq6RzctHrINAS/A_rLJanlR8a_XIELp; YSC=jUHQib-A6lM; wide=1; SIDCC=AJi4QfElLZDehVrwqPAnCTuQeWk36Z9JGjMp2CnNwZBcXsSXMjUlOhl-uT4kAvVhRtlUgQzVNSQt; __Secure-3PSIDCC=AJi4QfElPqD9rTlkMQiPTTg2GkkFkbpttIg03lS-w0FBu6WhZc_C4R9yvNnTkcNdFhEAJ_ijBYY",
-    //         },
-    //     },
-    //     filter: "audioonly"
-    // });
 
     return true
 }

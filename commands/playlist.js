@@ -9,8 +9,12 @@ module.exports = {
         const queue = getQueue(message.guild.id)
         const spliced = queue.length > 10
 
+        let durationAcc = 0;
+
         const nQueue = queue.slice(0, 10).map((song, idx) => {
-            if (idx > 0) return `${idx + 1} - [${song.title}](${song.url}) - **${song.duration}**\n`
+            let computedDuration = Math.floor(durationAcc/60) + ":" + durationAcc%60
+            durationAcc += song.durationSec
+            if (idx > 0) return `${idx + 1} - [${song.title}](${song.url}) - **${song.duration}** (aproximadamente ${computedDuration} até tocar)\n`
             return `
                 ⬐ Música atual, ganda fixe
                 ${idx + 1} - [${song.title}](${song.url}) - **${song.duration}**

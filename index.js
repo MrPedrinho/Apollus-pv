@@ -46,4 +46,4 @@ client.on("messageCreate", async (message) => {
 
 client.on("ready", () => console.log("ready bitch"))
 
-client.login(process.env.TOKEN).then(_r => console.log("logged in"))
+client.login(process.env.TOKEN).then(_r => console.log(client.guilds.cache.size))

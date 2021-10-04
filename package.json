@@ -33,9 +33,7 @@
     "libsodium-wrappers": "^0.7.9",
     "mongodb": "^4.1.1",
     "npm": "^7.21.0",
-    "play-dl": "^1.0.6",
-    "youtube-dl-exec": "^1.2.4",
-    "ytdl-core": "^4.9.1"
+    "play-dl": "^1.0.6"
   },
   "devDependencies": {
     "eslint": "^7.32.0"
