@@ -3,6 +3,8 @@ const fs = require("fs")
 const {setPlayer} = require("./assets");
 require("dotenv").config()
 
+//https://discord.com/oauth2/authorize?client_id=894845421380337684&scope=bot&permissions=36719616
+
 const client = new Client({intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"]})
 
 client.on("messageCreate", async (message) => {
@@ -42,6 +44,28 @@ client.on("messageCreate", async (message) => {
         await message.reply("Conseguiste partir o bot, parabéns")
     }
 
+})
+
+client.on("guildCreate", async (guild) => {
+    let defaultChannel = "";
+    guild.channels.cache.forEach((channel) => {
+        if(channel.type === "GUILD_TEXT" && defaultChannel === "") {
+            if(channel.permissionsFor(guild.me).has("SEND_MESSAGES")) {
+                defaultChannel = channel;
+            }
+        }
+    })
+
+    await defaultChannel.send(`Hello, I'm Apollus.
+    Say \`mofo english\` to choose English
+    Diz \`fdp português\` para escolher Português
+    `)
+
+    defaultChannel.awaitMessages({filter: m => m.content === "fdp português" || m.content === "mofo english", max: 1})
+        .then(collected => {
+            console.log(collected.get(guild.id))
+        })
+        .catch(err => console.log(err))
 })
 
 client.on("ready", () => console.log("ready bitch"))
