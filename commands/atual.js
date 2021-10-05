@@ -3,8 +3,8 @@ const {video_info} = require("play-dl");
 const {MessageEmbed} = require("discord.js");
 
 module.exports = {
-    help: "",
-    usage: "",
+    help: "Informação da música atual",
+    usage: "fdp atual",
     async execute (message, _props) {
         const queue = getQueue(message.guild.id)
 
