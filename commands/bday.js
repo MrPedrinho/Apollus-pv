@@ -1,20 +1,31 @@
-const {setConnection, playNow} = require("../assets");
+const {getGuild} = require("../assets");
 const {video_info} = require("play-dl");
 
 module.exports = {
-    help: "Feliz Aniversário!",
-    usage: "fdp bday <@aniversariante (opcional)>",
+    en: {
+        cmd: "bday",
+        help: "Happy Birthday!",
+        usage: "mofo bday <@birthday boy/girl>"
+    },
+    pt: {
+        cmd: "bday",
+        help: "Feliz Aniversário!",
+        usage: "fdp bday <@aniversariante (opcional)>",
+    },
 
     async execute (message, _props) {
-        const vc = message.member.voice.channel;
-        if (!vc) return message.reply("Tens de estar num voice chat, cabrão");
+        const guild = getGuild(message.guild.id)
+        const lang = guild.language
 
-        await setConnection(message, vc)
+        const vc = message.member.voice.channel;
+        if (!vc) return message.reply(lang === "pt" ? "Tens de estar num voice chat, cabrão" : "You need to be in a voice chat, fuckwit");
+
+        await guild.setConnection(message, vc)
 
         if (message.mentions.members.first()) {
-            message.channel.send(`Parabéns caralho!! <@!${message.mentions.members.first().id}>`)
+            message.channel.send(`${lang === "pt" ? "Parabéns caralho!!" : "Happy birthday asshole!"} <@!${message.mentions.members.first().id}>`)
         } else {
-            message.reply("Quem é que faz anos caralho? Espero que haja bolo")
+            message.reply(lang === "pt" ? "Quem é que faz anos caralho? Espero que haja bolo" : "Whose birthday is it? I hope there's cake")
         }
 
 
@@ -28,6 +39,6 @@ module.exports = {
             channel: message.channel,
         }
 
-        await playNow(message.guild.id, song)
+        await guild.playNow(song)
     }
 }

@@ -1,42 +1,64 @@
 const fs = require("fs");
 const {MessageEmbed} = require("discord.js");
+const {getGuild} = require("../assets");
 
-const help_general = []
-const helps = {}
+const ajudaCmds = {
+    en: {
+        cmd: "help",
+        help: "Information about each command, as if you're stupid",
+        usage: "mofo ajuda",
+    },
+    pt: {
+        cmd: "ajuda",
+        help: "Ajuda-te a perceber os comandos, como se fosses estúpido",
+        usage: "fdp ajuda"
+    }
+}
+
+const help_general = {en: [], pt: []}
+const helps = {en: {}, pt: {}}
 
 const commandFiles = fs.readdirSync(__dirname).filter(file => file.endsWith(".js"));
 
-commandFiles.forEach((file) => {
-    if (file === "ajuda.js") {
-        help_general.push(`\`fdp ajuda\` - Ajuda-te a perceber os comandos, como se fosses estúpido`)
-        helps["ajuda"] = `\`fdp ajuda\` - Ajuda-te a perceber os comandos, como se fosses estúpido`
-    } else {
-        const cmd = require(`${__dirname}/${file.toLowerCase()}`)
-        help_general.push(`\`fdp ${file.split(".")[0]}\` - ${cmd.help}`)
-        helps[file.split(".")[0]] = `\`${cmd.usage}\` - ${cmd.help}`
-    }
+commandFiles.forEach(file => {
+    const cmd = file === "ajuda.js" ? ajudaCmds : require(`${__dirname}/${file.toLowerCase()}`)
+    help_general.en.push(`\`mofo ${cmd.en.cmd}\` - ${cmd.en.help}`)
+    help_general.pt.push(`\`fdp ${cmd.pt.cmd}\` - ${cmd.pt.help}`)
+
+    helps.en[cmd.en.cmd] = `\`${cmd.en.usage}\` - ${cmd.en.help}`
+    helps.pt[cmd.pt.cmd] = `\`${cmd.pt.usage}\` - ${cmd.pt.help}`
 })
 
 module.exports = {
-    help: "Ajuda-te a perceber os comandos, como se fosses estúpido",
+    en: {
+        cmd: "help",
+        help: "Information about each command, as if you're stupid",
+        usage: "mofo ajuda",
+    },
+    pt: {
+        cmd: "ajuda",
+        help: "Ajuda-te a perceber os comandos, como se fosses estúpido",
+        usage: "fdp ajuda"
+    },
 
     async execute (message, props) {
 
         const date = new Date()
+        const lang = getGuild(message.guild.id).language
 
         if (props.length > 0) {
             try {
 
-                if (!helps[props[0].toLowerCase()]) return message.reply("Não te posso ajudar com um comando que não existe");
+                if (!helps[props[0].toLowerCase()]) return message.reply(lang === "pt" ? "Não te posso ajudar com um comando que não existe" : "No can do, that command does not exist"); //@todo fix this
 
                 const embed = new MessageEmbed({
-                    "title": "Está aqui a ajuda que pediste",
+                    "title": lang === "pt" ? "Está aqui a ajuda que pediste" : "Here's the help you asked for",
                     "color": 15158332,
                     "timestamp": date,
-                    "description": helps[props[0].toLowerCase()],
+                    "description": helps[lang][props[0].toLowerCase()],
                     "footer": {
                         "icon_url": message.author.displayAvatarURL(),
-                        "text": `Pedido por ${message.author.username}#${message.author.discriminator}`
+                        "text": `${lang === "pt" ? "Pedido por" : "Asked by"} ${message.author.username}#${message.author.discriminator}`
                     }
                 })
 
@@ -49,13 +71,13 @@ module.exports = {
         }
 
         const embed = new MessageEmbed({
-            "title": "Aqui está, agradece-me depois",
+            "title": lang === "pt" ? "Aqui está, agradece-me depois" : "Here, thank me later",
             "color": 15158332,
             "timestamp": date,
-            "description": help_general.join("\n\n"),
+            "description": help_general[lang].join("\n\n"),
             "footer": {
                 "icon_url": message.author.displayAvatarURL(),
-                "text": `Pedido por ${message.author.username}#${message.author.discriminator}`
+                "text": `${lang === "pt" ? "Pedido por" : "Asked by"} ${message.author.username}#${message.author.discriminator}`
             }
         })
 

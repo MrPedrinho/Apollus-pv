@@ -1,15 +1,25 @@
-const {setConnection, playNow} = require("../assets");
+const {getGuild} = require("../assets");
 const {video_info} = require("play-dl");
 
 module.exports = {
-    help: "?",
-    usage: "fdp rick",
+    en: {
+        cmd: "rick",
+        help: "?",
+        usage: "mofo rick"
+    },
+    pt: {
+        cmd: "rick",
+        help: "?",
+        usage: "fdp rick",
+    },
 
     async execute (message, _props) {
-        const vc = message.member.voice.channel;
-        if (!vc) return message.reply("Tens de estar num voice chat, cabrão");
+        const guild = getGuild(message.guild.id)
 
-        await setConnection(message, vc)
+        const vc = message.member.voice.channel;
+        if (!vc) return message.reply(guild.language === "pt" ? "Tens de estar num voice chat, cabrão" : "You need to be in a voice chat, fuckwit");
+
+        await guild.setConnection(message, vc)
 
         message.channel.send(`Never gonna give you up <@!${message.author.id}>`)
 
@@ -24,6 +34,8 @@ module.exports = {
             channel: message.channel,
         }
 
-        await playNow(message.guild.id, song)
+        //@todo upload rick's foot
+
+        await guild.playNow(song)
     }
 }

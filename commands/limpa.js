@@ -1,12 +1,22 @@
-const {cleanQueue} = require("../assets");
+const {getGuild} = require("../assets");
 
 module.exports = {
-    help: "Limpa a playlist",
-    usage: "fdp limpa",
+    en: {
+        cmd: "clear",
+        help: "Clears the queue",
+        usage: "mofo clear"
+    },
+    pt: {
+        cmd: "limpa",
+        help: "Limpa a playlist",
+        usage: "fdp limpa",
+    },
 
     async execute (message, _props) {
 
+        const guild = getGuild(message.guild.id)
+
         message.reply("Okok")
-        cleanQueue(message.guild.id)
+        guild.cleanQueue()
     }
 }

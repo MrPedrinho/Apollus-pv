@@ -1,11 +1,21 @@
-const {getPlayer} = require("../assets");
+const {getGuild} = require("../assets");
 
 module.exports = {
-    help: 'Para a música',
-    usage: "fdp para",
+    en: {
+        cmd: "pause",
+        help: "Pauses the music.",
+        usage: "mofo pause"
+    },
+    pt: {
+        cmd: "para",
+        help: "Para a música",
+        usage: "fdp para",
+    },
 
     async execute(message, _props) {
-        message.reply("Então querem ou não querem música? Decidam-se porra")
-        getPlayer(message.guild.id).pause()
+        const guild = getGuild(message.guild.id)
+
+        message.reply(guild.language === "pt" ? "Então querem ou não querem música? Decidam-se porra" : "Fuckin' hell. Do you want music or not?")
+        guild.getPlayer().pause()
     }
 }

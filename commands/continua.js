@@ -1,11 +1,22 @@
-const {getPlayer} = require("../assets");
+const {getGuild} = require("../assets");
+
 module.exports = {
-    help: 'O oposto do "para", mete a música a dar',
-    usage: "fdp continua",
+    en: {
+        cmd: "continue",
+        help: "The opposite of `pause`, makes the music play",
+        usage: "mofo continue"
+    },
+    pt: {
+      cmd: "continua",
+        help: 'O oposto do "para", mete a música a dar',
+        usage: "fdp continua",
+    },
 
     async execute(message, _props) {
 
-        message.reply("Ah afinal sempre querem música")
-        getPlayer(message.guild.id).unpause()
+        const guild = getGuild(message.guild.id)
+
+        message.reply(guild.language === "pt" ? "Ah afinal sempre querem música" : "Ah, so you do want music after all")
+        guild.getPlayer().unpause()
     }
 }

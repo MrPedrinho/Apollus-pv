@@ -1,9 +1,27 @@
 const play = require("play-dl")
 const {is_expired, refreshToken, sp_validate, spotify} = require("play-dl")
-const {addToQueue, shuffleArray} = require("./assets")
+const {getGuild} = require("./assets")
 const {MessageEmbed} = require("discord.js")
 
+async function getSong(title, message) {
+    let searched = await play.search(title, { limit : 1 })
+    searched = searched[0]
+
+    return {
+        title: searched.title,
+        url: searched.url,
+        duration: searched.durationRaw,
+        durationSec: parseInt(searched.durationInSec),
+        thumbnail_url: searched.thumbnail.url,
+        author: message.author,
+        channel: message.channel
+    }
+}
+
 async function execute (message, props) {
+
+    const guild = getGuild(message.guild.id)
+    const lang = guild.language
 
     if(is_expired()){
         await refreshToken()
@@ -15,99 +33,76 @@ async function execute (message, props) {
     if (valid === "track") {
         const track = await spotify(props[0])
 
-        let searched = await play.search(`${track.name} ${track.artists.map(artist => artist.name + " ")}`, { limit : 1 })
-        searched = searched[0]
-
-        const song = {
-            title: searched.title,
-            url: searched.url,
-            duration: searched.durationRaw,
-            durationSec: parseInt(searched.durationInSec),
-            thumbnail_url: searched.thumbnail.url,
-            author: message.author,
-            channel: message.channel
-        }
-
+        const song = await getSong(`${track.name} ${track.artists.map(artist => artist.name + " ")}`, message)
 
         const embed = new MessageEmbed({
-            "title": "Nova música adicionada",
+            "title": lang === "pt" ? "Nova música adicionada" : "New song added",
             "color": 15158332,
             "timestamp": date,
             "description": `
                 [${song.title}](${song.url})
-                **Duração** - [${song.duration}](${song.url})
+                **${lang === "pt" ? "Duração" : "Duration"}** - [${song.duration}](${song.url})
             `,
             "thumbnail": {
                 "url": song.thumbnail_url
             },
             "footer": {
                 "icon_url": message.author.displayAvatarURL(),
-                "text": `Música de ${message.author.username}#${message.author.discriminator}`
+                "text": `${lang === "pt" ? "Música de" : "Song by"} ${message.author.username}#${message.author.discriminator}`
             }
         })
 
         message.channel.send({embeds: [embed]})
 
-        await addToQueue(song)
+        await guild.addToQueue(song)
     } else if (valid === "playlist" || valid === "album") {
         let data = await spotify(props[0])
 
         let converted = []
         let progress = 0
 
-        let confirmMessage = await message.channel.send(`Estou a procurar as músicas - ${progress}/${data.tracksCount || data.trackCount}`)
+        let confirmMessage = await message.channel.send(`${lang === "pt" ? "Estou a procurar as músicas" : "Searching the songs"} - ${progress}/${data.tracksCount || data.trackCount}`)
 
         for (const v of data.page(1)) {
-            let song = await play.search(`${v.name} ${v.artists.map(artist => artist.name + " ")}`, {limit: 1})
-            song = song[0]
+            const song = await getSong(`${v.name} ${v.artists.map(artist => artist.name + " ")}`, message)
 
-            const convertedSong = {
-                title: song.title,
-                url: song.url,
-                duration: song.durationRaw,
-                durationSec: parseInt(song.durationInSec),
-                thumbnail_url: song.thumbnail.url,
-                author: message.author,
-                channel: message.channel
-            }
-
-            converted.push(convertedSong)
+            converted.push(song)
 
             progress++
             if (progress === data.tracksCount) {
                 await confirmMessage.delete()
                 confirmMessage = undefined
             } else {
-                await confirmMessage.edit(`Estou a procurar as músicas - ${progress}/${data.tracksCount || data.trackCount}`)
+                await confirmMessage.edit(`${lang === "pt" ? "Estou a procurar as músicas" : "Searching the songs"}- ${progress}/${data.tracksCount || data.trackCount}`)
             }
         }
 
 
         if (props[1]?.toLowerCase() !== "noshuffle") {
-            shuffleArray(converted)
+            guild.shuffleArray(converted)
         }
 
         const embed = new MessageEmbed({
-            "title": "Playlist adicionada",
+            "title": lang === "pt" ? "Playlist adicionada" : "Playlist added",
             "color": 15158332,
             "timestamp": date,
             "description":`
                 [${data.name}](${data.url})
-                **Nº de Músicas**: ${data.tracksCount || data.trackCount}
+                **${lang === "pt" ? "Nº de Músicas" : "Number of songs"}**: ${data.tracksCount || data.trackCount}
             `,
             "thumbnail": {
                 "url": data.thumbnail.url
             },
             "footer": {
                 "icon_url": message.author.displayAvatarURL(),
-                "text": `Playlist colocada por ${message.author.username}#${message.author.discriminator}`
+                "text": `${lang === "pt" ? "Playlist colocada por" : "Playlist by"} ${message.author.username}#${message.author.discriminator}`
             }
         })
 
         message.channel.send({embeds: [embed]})
 
         for (const v of converted) {
-            await addToQueue(v);
+            await guild.addToQueue(v);
         }
     } else {
         await require("youtube-loader").execute(message, props)

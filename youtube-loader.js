@@ -1,10 +1,10 @@
 const {video_info, yt_validate, search} = require("play-dl")
-const {addToQueue, playPlaylist} = require("./assets")
+const {getGuild} = require("./assets")
 const {MessageEmbed} = require("discord.js")
 
-async function searchAndAdd(props, message) {
+async function searchAndAdd(props, message, lang) {
     let video = await search(props.join(" "), {limit: 1})
-    if (!video) return message.reply("Parabéns, conseguiste partir o bot. Impressionante, fds");
+    if (!video) return message.reply(lang === "pt" ? "Parabéns, conseguiste partir o bot. Impressionante, fds" : "Congrats, you managed to break the bot. Fucking impressive");
 
     video = video[0]
     return {
@@ -21,6 +21,9 @@ async function searchAndAdd(props, message) {
 async function execute (message, props) {
     let song = {}
 
+    const guild = getGuild(message.guild.id)
+    const lang = guild.language
+
     let valid = yt_validate(props[0])
 
     if (valid === "video") {
@@ -36,15 +39,15 @@ async function execute (message, props) {
                 channel: message.channel,
             }
         } catch (err) {
-            song = await searchAndAdd(props, message)
+            song = await searchAndAdd(props, message, lang)
         }
 
     } else if (valid === "playlist") {
-        await playPlaylist(message.guild.id, message,props[0], [props[1]])
+        await guild.playPlaylist(message, props[0], [props[1]])
         return
     } else {
         try {
-            song = await searchAndAdd(props, message)
+            song = await searchAndAdd(props, message, lang)
         } catch (err) {
             console.error(err)
         }
@@ -53,26 +56,26 @@ async function execute (message, props) {
     const date = new Date()
 
     const embed = new MessageEmbed({
-        "title": "Nova música adicionada",
+        "title": lang === "pt" ? "Nova música adicionada" : "New song added",
         "color": 15158332,
         "timestamp": date,
         "description": `
                 [${song.title}](${song.url})
-                **Duração** - [${song.duration}](${song.url})
+                **${lang === "pt" ? "Duração" : "Duration"}** - [${song.duration}](${song.url})
             `,
         "thumbnail": {
             "url": song.thumbnail_url
         },
         "footer": {
             "icon_url": message.author.displayAvatarURL(),
-            "text": `Música de ${message.author.username}#${message.author.discriminator}`
+            "text": `${lang === "pt" ? "Música de" : "Song by"} ${message.author.username}#${message.author.discriminator}`
         }
     })
 
     message.channel.send({embeds: [embed]})
 
     try {
-        await addToQueue(song)
+        await guild.addToQueue(song)
     } catch (err) {
         console.log(err)
     }

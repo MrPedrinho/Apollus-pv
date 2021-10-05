@@ -1,14 +1,22 @@
 
-const {skipSong} = require("../assets")
+const {getGuild} = require("../assets")
 
 module.exports = {
-    help: 'Skips ilimitados, sem premium',
-    usage: "fdp salta",
+    en: {
+        cmd: "skip",
+        help: "Unlimited skips, for free.",
+        usage: "mofo skip"
+    },
+    pt: {
+        cmd: "salta",
+        help: "Skips ilimitados, sem premium",
+        usage: "fdp salta",
+    },
 
     async execute (message, _props) {
 
         try {
-            await skipSong(message, message.guild.id)
+            await getGuild(message.guild.id).skipSong(message)
         } catch (err) {
             console.log(err)
         }

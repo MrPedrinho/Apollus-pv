@@ -1,19 +1,31 @@
-const {setConnection} = require("../assets");
+const {getGuild} = require("../assets");
 const {sp_validate} = require("play-dl");
 
 module.exports = {
-    help: " Aceita URLs do youtube e spotify, se for uma playlist podes meter `noshuffle` no fim para não dar shuffle",
-    usage: "fdp mete <música | url>",
+    en: {
+        cmd: "add",
+        help: "Adds a song to the queue. Supports Youtube search and playlists; and Spotify albums, tracks, and playlists.",
+        usage: "mofo add <search query or URL>"
+    },
+    pt: {
+        cmd: "mete",
+        help: "Adiciona uma música à playlist. Suporta pesquisa e playlists do Youtube; e albums, músicas e playlists do Spotify.",
+        usage: "fdp mete <pesquisa ou URL>",
+    },
+
 
     async execute(message, props) {
 
+        const guild = getGuild(message.guild.id)
+        const lang = guild.language
+
         const vc = message.member.voice.channel;
 
-        if (!vc) return message.reply("Tens de estar num voice chat, cabrão");
+        if (!vc) return message.reply(lang === "pt" ? "Tens de estar num voice chat, cabrão" : "You need to be in a voice chat, fuckwit");
 
-        if (!props.length) return message.reply("Tens de dizer uma música, corno");
+        if (!props.length) return message.reply(lang === "pt" ? "Tens de dizer uma música, corno" : "You need to give a music, bitch");
 
-        await setConnection(message, vc)
+        await guild.setConnection(message, vc)
 
         let spotify = sp_validate(props[0])
 

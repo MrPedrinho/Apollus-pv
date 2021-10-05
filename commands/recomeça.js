@@ -1,11 +1,19 @@
-const {restartSong} = require("../assets");
+const {getGuild} = require("../assets");
 module.exports = {
-    help: "Recomeça a música",
-    usage: "fdp recomeça",
+    en: {
+        cmd: "restart",
+        help: "Restarts the current song.",
+        usage: "mofo restart"
+    },
+    pt: {
+        cmd: "recomeça",
+        help: "Recomeça a música atual.",
+        usage: "fdp recomeça",
+    },
 
     async execute (message, _props) {
 
-        message.reply("Feito, chefe")
-        await restartSong(message.guild.id)
+        message.reply(getGuild(message.guild.id).language === "pt" ? "Feito, chefe" : "Aye Sir!")
+        await getGuild(message.guild.id).restartSong(message.guild.id)
     }
 }

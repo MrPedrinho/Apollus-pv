@@ -1,31 +1,45 @@
-const {getQueue} = require("../assets");
+const {getGuild} = require("../assets");
 const {MessageEmbed} = require("discord.js");
 
 module.exports = {
     help: 'Mostra a playlist atual',
     usage: "fdp playlist",
 
+    en: {
+        cmd: "queue",
+        help: "Displays the song queue",
+        usage: "mofo queue"
+    },
+    pt: {
+        cmd: "playlist",
+        help: "Mostra a playlist atual",
+        usage: "fdp playlist",
+    },
+
     async execute (message, _props) {
-        const queue = getQueue(message.guild.id)
+        const guild = getGuild(message.guild.id)
+        const lang = guild.language
+
+        const queue = guild.getQueue()
         const spliced = queue.length > 10
 
         let durationAcc = 0;
 
         const nQueue = queue.slice(0, 10).map((song, idx) => {
-            let computedDuration = Math.floor(durationAcc/60) + ":" + durationAcc%60
+            let computedDuration = Math.floor(durationAcc/60) + ":" + durationAcc%60 < 10 ? durationAcc%60 + "0" : durationAcc%60
             durationAcc += song.durationSec
-            if (idx > 0) return `${idx + 1} - [${song.title}](${song.url}) - **${song.duration}** (aproximadamente ${computedDuration} até tocar)\n`
+            if (idx > 0) return `${idx + 1} - [${song.title}](${song.url}) - **${song.duration}** (${lang === "pt" ? `aproximadamente ${computedDuration} até tocar`: `approximately ${computedDuration} until it plays`})\n`
             return `
-                ⬐ Música atual, ganda fixe
+                ⬐ ${lang === "pt" ? "Música atual, ganda fixe}" : "Current music, very pog"}
                 ${idx + 1} - [${song.title}](${song.url}) - **${song.duration}**
                 ⬑\n`
         })
 
         nQueue.push(nQueue.length === 0 ?
-            "Vazio, como o teu crânio"
+            lang === "pt" ? "Vazio, como o teu crânio" : "Empty, like your brain"
             : spliced ?
-                "Ainda há mais músicas, mas calma aí que ainda falta algum tempo"
-                : `Acaba aqui`
+                lang === "pt" ? "Ainda há mais músicas, mas calma aí que ainda falta algum tempo": "There are more songs, but it'll take a while for them to play"
+                : lang === "pt" ? "Acaba aqui" : "It ends here"
         )
 
         const date = new Date()
