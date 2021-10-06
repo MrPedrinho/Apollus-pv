@@ -49,7 +49,7 @@ module.exports = {
         if (props.length > 0) {
             try {
 
-                if (!helps[props[0].toLowerCase()]) return message.reply(lang === "pt" ? "Não te posso ajudar com um comando que não existe" : "No can do, that command does not exist"); //@todo fix this
+                if (!helps[lang][props[0].toLowerCase()]) return message.reply(lang === "pt" ? "Não te posso ajudar com um comando que não existe" : "No can do, that command does not exist")
 
                 const embed = new MessageEmbed({
                     "title": lang === "pt" ? "Está aqui a ajuda que pediste" : "Here's the help you asked for",

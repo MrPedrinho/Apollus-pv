@@ -19,18 +19,33 @@ class Guild {
         this.id = id
     }
 
+    inactiveTmeout() {
+        setTimeout(async () => {
+            if (this.queue.length > 0) return
+            await this.player.stop()
+            this.player = undefined
+            this.idler = undefined
+            this.connection.destroy()
+            this.connection = undefined
+
+            if (this.previousMusic) {
+                this.previousMusic.channel.send(this.language === "pt" ? "Como vocês me abandonaram, eu saí. Fodam-se a todos" : "Since you guys abandoned me, I'm leaving. Fuck y'all")
+            }
+        }, 3000) //5 * 60 * 1000
+    }
+
     async play(song) {
-        if (!song?.url) return
+        if (!song?.url) return this.inactiveTmeout()
         const date = new Date()
         const lang = this.language
 
         const embed = new MessageEmbed({
-            "title": lang === "pt" ? "Prepara-te para dançar 💃🕺, está agora a tocar" : "Get your moves ready, the next song is coming right up!",
+            "title": lang === "pt" ? "Prepara-te para dançar 💃🕺, está agora a tocar" : "Get your moves ready 💃🕺, the next song is coming right up!",
             "color": 15158332,
             "timestamp": date,
             "description": `
                 [${song.title}](${song.url})
-                **${lang === "pt" ? "Duração" : "Duration"}** - [${song.duration}](${song.url})
+                **${lang === "pt" ? "Duração" : "Length"}** - [${song.duration}](${song.url})
             `,
             "thumbnail": {
                 "url": song.thumbnail_url
@@ -58,7 +73,8 @@ class Guild {
         const song = this.queue[0]
 
         if (!song?.url) {
-            return this.player.stop()
+            this.inactiveTmeout()
+            return
         }
 
         try {
@@ -68,7 +84,9 @@ class Guild {
             song.channel.send(this.language === "pt" ? "Algum fdp fez esta merda parar" : "Some mofo made this shit crash")
             this.connection.destroy();
             this.connection = undefined
-            this.player.stop()
+            await this.player.stop()
+            this.player = undefined
+            this.idler = undefined
             this.queue = []
             throw err
         }
@@ -80,7 +98,7 @@ class Guild {
         this.queue = this.queue || []
         this.player = this.player || createAudioPlayer({
             behaviors: {
-                noSubscriber: NoSubscriberBehavior.Stop
+                noSubscriber: NoSubscriberBehavior.Pause
             }
         })
         this.connection = this.connection || undefined
@@ -213,6 +231,8 @@ class Guild {
     cleanQueue() {
         this.queue = []
         this.player.stop()
+        this.player = undefined
+        this.idler = undefined
     }
 
     getQueue() {
@@ -308,6 +328,8 @@ class Guild {
         this.connection = undefined
         this.queue = []
         this.player.stop()
+        this.player = undefined
+        this.idler = undefined
         this.looping = false
     }
 }

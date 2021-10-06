@@ -41,7 +41,7 @@ async function execute (message, props) {
             "timestamp": date,
             "description": `
                 [${song.title}](${song.url})
-                **${lang === "pt" ? "Duração" : "Duration"}** - [${song.duration}](${song.url})
+                **${lang === "pt" ? "Duração" : "Length"}** - [${song.duration}](${song.url})
             `,
             "thumbnail": {
                 "url": song.thumbnail_url

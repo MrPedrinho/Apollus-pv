@@ -21,7 +21,13 @@ module.exports = {
 
         await guild.setConnection(message, vc)
 
-        message.channel.send(`Never gonna give you up <@!${message.author.id}>`)
+        try {
+            message.channel.send({
+                files: ["./rickroll-image.jpg"]
+            })
+        } catch {
+            message.channel.send(`Never gonna give you up <@!${message.author.id}>`)
+        }
 
         const {video_details} = await video_info("https://www.youtube.com/watch?v=dQw4w9WgXcQ", {cookie: process.env.COOKIES})
 
@@ -33,8 +39,6 @@ module.exports = {
             author: message.author,
             channel: message.channel,
         }
-
-        //@todo upload rick's foot
 
         await guild.playNow(song)
     }

@@ -3,9 +3,9 @@ const {sp_validate} = require("play-dl");
 
 module.exports = {
     en: {
-        cmd: "add",
+        cmd: "play",
         help: "Adds a song to the queue. Supports Youtube search and playlists; and Spotify albums, tracks, and playlists.",
-        usage: "mofo add <search query or URL>"
+        usage: "mofo play <search query or URL>"
     },
     pt: {
         cmd: "mete",
