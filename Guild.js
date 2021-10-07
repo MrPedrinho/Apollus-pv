@@ -19,7 +19,7 @@ class Guild {
         this.id = id
     }
 
-    inactiveTmeout() {
+    inactiveTimeout() {
         setTimeout(async () => {
             if (this.queue.length > 0) return
             await this.player.stop()
@@ -31,11 +31,11 @@ class Guild {
             if (this.previousMusic) {
                 this.previousMusic.channel.send(this.language === "pt" ? "Como vocês me abandonaram, eu saí. Fodam-se a todos" : "Since you guys abandoned me, I'm leaving. Fuck y'all")
             }
-        }, 3000) //5 * 60 * 1000
+        }, 5 * 60 * 1000) //15 minutes
     }
 
     async play(song) {
-        if (!song?.url) return this.inactiveTmeout()
+        if (!song?.url) return this.inactiveTimeout()
         const date = new Date()
         const lang = this.language
 
@@ -73,7 +73,7 @@ class Guild {
         const song = this.queue[0]
 
         if (!song?.url) {
-            this.inactiveTmeout()
+            this.inactiveTimeout()
             return
         }
 
