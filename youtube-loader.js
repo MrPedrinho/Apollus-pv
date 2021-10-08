@@ -4,9 +4,9 @@ const {MessageEmbed} = require("discord.js")
 
 async function searchAndAdd(props, message, lang) {
     let video = await search(props.join(" "), {limit: 1})
+    video = video[0]
     if (!video) return message.reply(lang === "pt" ? "Parabéns, conseguiste partir o bot. Impressionante, fds" : "Congrats, you managed to break the bot. Fucking impressive");
 
-    video = video[0]
     return {
         title: video.title,
         url: video.url,
@@ -16,6 +16,7 @@ async function searchAndAdd(props, message, lang) {
         author: message.author,
         channel: message.channel
     }
+
 }
 
 async function execute (message, props) {
@@ -53,6 +54,10 @@ async function execute (message, props) {
         }
     }
 
+    if (!song.url) {
+        return message.reply(lang === "pt" ? "Ocorreu um erro, tenta outra vez" : "An error occured, try again")
+    }
+
     const date = new Date()
 
     const embed = new MessageEmbed({
@@ -73,6 +78,7 @@ async function execute (message, props) {
     })
 
     message.channel.send({embeds: [embed]})
+
 
     try {
         await guild.addToQueue(song)
