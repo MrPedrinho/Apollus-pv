@@ -30,13 +30,15 @@ client.on("messageCreate", async (message) => {
     const guild = getGuild(message.guild.id)
 
     if (message.content === "fdp português" || message.content === "mofo english" && !guild) {
-
+        if (!message.member.permissions.has("ADMINISTRATOR")) return;
         const language = message.content === "mofo english" ? "en" : "pt"
 
         const newMsg = await message.reply(language === "pt" ? "Aguarda..." : "Please wait...")
 
         await Server
             .create({guild_id: message.guild.id, language})
+
+        createGuild(message.guild.id, language)
 
         await newMsg.edit(language === "pt" ? "Sucesso, o Apollus está pronto para utilizar" : "Success, Apollus is now ready to use!")
         return
@@ -108,7 +110,7 @@ client.on("guildDelete", async (guild) => {
 client.on("ready", () => console.log("ready bitch"))
 
 client.login(process.env.TOKEN).then(_r => {
-    client.user.setActivity("fdp ajuda", {type: "PLAYING"}) //@todo update this
+    client.user.setActivity("music", {type: "LISTENING"})
 
     const servers = client.guilds.cache
     servers.forEach(async sv => {
