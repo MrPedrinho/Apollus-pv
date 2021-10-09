@@ -41,10 +41,10 @@ module.exports = {
         usage: "fdp ajuda"
     },
 
-    async execute (message, props) {
+    async execute (message, props, lan) {
 
         const date = new Date()
-        const lang = getGuild(message.guild.id).language
+        const lang = lan || getGuild(message.guild.id).language
 
         if (props.length > 0) {
             try {

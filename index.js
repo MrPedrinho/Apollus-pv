@@ -29,9 +29,44 @@ client.on("messageCreate", async (message) => {
 
     const guild = getGuild(message.guild.id)
 
-    if (message.content === "fdp português" || message.content === "mofo english" && !guild) {
+    if (message.content.toLowerCase().trim() === "mofo help") {
+        try {
+            const cmd = require("./commands/ajuda")
+            await cmd.execute(message, [], "en")
+        } catch (e) {
+            console.log(e)
+        }
+        return
+    } else if (message.content.toLowerCase().trim() === "fdp ajuda") {
+        try {
+            const cmd = require("./commands/ajuda")
+            await cmd.execute(message, [], "pt")
+        } catch (e) {
+            console.log(e)
+        }
+        return
+    }
+
+    if (message.content === "fdp português" || message.content === "fdp portugues" || message.content === "mofo english" && !guild) {
         if (!message.member.permissions.has("ADMINISTRATOR")) return;
-        const language = message.content === "mofo english" ? "en" : "pt"
+        let language
+        switch(message.content.toLowerCase().trim()) {
+            case "mofo english": {
+                language = "en"
+                break
+            }
+            case "fdp portugues": {
+                language = "pt"
+                break
+            }
+            case "fdp português": {
+                language = "pt"
+                break
+            }
+            default: {
+                language = "en"
+            }
+        }
 
         const newMsg = await message.reply(language === "pt" ? "Aguarda..." : "Please wait...")
 
