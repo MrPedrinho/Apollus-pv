@@ -25,7 +25,7 @@ class Guild {
             if (this.queue.length > 0) return
             this.player = undefined
             this.idler = undefined
-            this.connection.destroy()
+            this.connection && this.connection.destroy()
             this.connection = undefined
 
             if (this.previousMusic) {
@@ -82,7 +82,7 @@ class Guild {
 
         } catch (err) {
             song.channel.send(this.language === "pt" ? "Algum fdp fez esta merda parar" : "Some mofo made this shit crash")
-            this.connection.destroy();
+            this.connection && this.connection.destroy();
             this.connection = undefined
             await this.player.stop()
             this.player = undefined
@@ -327,7 +327,7 @@ class Guild {
     }
 
     kill () {
-        this.connection.destroy()
+        this.connection && this.connection.destroy()
         this.connection = undefined
         this.queue = []
         this.player.stop()
