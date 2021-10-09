@@ -92,7 +92,7 @@ client.on("messageCreate", async (message) => {
 
     try {
         const command = require(indexedCmd);
-        await command.execute(message, props)
+        await command.execute(message, props.filter(p => p.length > 0))
     } catch (err){
         console.log(err)
         await message.reply(lang === "pt" ? "Conseguiste partir o bot, parabéns" : "You managed to break the bot, congratulations")

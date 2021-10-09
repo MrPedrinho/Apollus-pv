@@ -20,9 +20,9 @@ class Guild {
     }
 
     inactiveTimeout() {
+        this.player.stop()
         setTimeout(async () => {
             if (this.queue.length > 0) return
-            await this.player.stop()
             this.player = undefined
             this.idler = undefined
             this.connection.destroy()
