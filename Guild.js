@@ -20,7 +20,7 @@ class Guild {
     }
 
     inactiveTimeout() {
-        this.player.stop()
+        this.player && this.player.stop()
         setTimeout(async () => {
             if (this.queue.length > 0) return
             this.player = undefined
@@ -140,6 +140,7 @@ class Guild {
                 title: v.title,
                 url: v.url,
                 duration: v.durationRaw,
+                durationSec: v.durationInSec,
                 thumbnail_url: v.thumbnail.url,
                 author: message.author,
                 channel: message.channel
@@ -195,6 +196,8 @@ class Guild {
     async skipSong(message) {
         const song = this.queue[0]
 
+        if (!song.url) return;
+
         this.previousMusic = song
 
         const date = new Date()
@@ -217,9 +220,9 @@ class Guild {
             }
         })
 
-        song.channel.send({embeds: [embed]})
+        await song.channel.send({embeds: [embed]})
 
-       this.queue.shift()
+        this.queue.shift()
 
         try {
             await this.video_player()
