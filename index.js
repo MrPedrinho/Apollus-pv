@@ -82,13 +82,13 @@ client.on("messageCreate", async (message) => {
     const trimmed = message.content.toLowerCase().trim()
     if (trimmed === "fdp") {
         try {
-            await message.reply("Filho da puta és tu")
+            message.guild.me.permissions.has("READ_MESSAGE_HISTORY") && await message.reply("Filho da puta és tu")
         } catch (err) {
             console.log(err)
         }
     } else if (trimmed === "mofo") {
         try {
-            await message.reply("The one motherfucker here is you")
+            message.guild.me.permissions.has("READ_MESSAGE_HISTORY") && await message.reply("The one motherfucker here is you")
         } catch (err) {
             console.log(err)
         }
@@ -118,8 +118,8 @@ client.on("messageCreate", async (message) => {
 
     try {
         if (!indexedCmd) {
-            if (lang === "en") return await message.reply("Are you that dumb? That's not a command, dip shit")
-            return await message.reply("És estúpido ou fazes-te? Isso não é um comando, porra")
+            if (lang === "en") return message.guild.me.permissions.has("READ_MESSAGE_HISTORY") &&  await message.reply("Are you that dumb? That's not a command, dip shit")
+            return message.guild.me.permissions.has("READ_MESSAGE_HISTORY") &&  await message.reply("És estúpido ou fazes-te? Isso não é um comando, porra")
         }
     } catch (e) {
         console.log(e)
@@ -130,7 +130,7 @@ client.on("messageCreate", async (message) => {
         await command.execute(message, props.filter(p => p.length > 0))
     } catch (err){
         console.log(err)
-        await message.reply(lang === "pt" ? "Conseguiste partir o bot, parabéns" : "You managed to break the bot, congratulations")
+        message.guild.me.permissions.has("READ_MESSAGE_HISTORY") && await message.reply(lang === "pt" ? "Conseguiste partir o bot, parabéns" : "You managed to break the bot, congratulations")
     }
 
 })

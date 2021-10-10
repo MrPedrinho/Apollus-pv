@@ -20,7 +20,7 @@ module.exports = {
 
         const removedSong = guild.removeSong(props.join(" "))
         if (!removedSong) {
-            return message.reply(lang === "pt" ? "Não encontrei nada" : "I found nothing")
+            return message.guild.me.permissions.has("READ_MESSAGE_HISTORY") &&  message.reply(lang === "pt" ? "Não encontrei nada" : "I found nothing")
         }
         const date = new Date()
 
