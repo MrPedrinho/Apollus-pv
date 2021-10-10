@@ -30,8 +30,9 @@ class Guild {
 
             if (this.previousMusic) {
                 this.previousMusic.channel.send(this.language === "pt" ? "Como vocês me abandonaram, eu saí. Fodam-se a todos" : "Since you guys abandoned me, I'm leaving. Fuck y'all")
+                this.previousMusic = undefined
             }
-        }, 15 * 60 * 1000) //15 minutes
+        }, 15 * 60 * 1000)
     }
 
     async play(song) {
