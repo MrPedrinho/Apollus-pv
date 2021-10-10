@@ -60,16 +60,16 @@ async function selectLanguage(guild) {
             const content = collected.map(d => d.content)[0]
             const language = content === "mofo english" ? "en" : "pt"
 
-            const newMsg = await defaultChannel.send(language === "pt" ? "Aguarda..." : "Please wait...")
+            const newMsg = guild.me.permissions.has("READ_MESSAGE_HISTORY") && await defaultChannel.send(language === "pt" ? "Aguarda..." : "Please wait...")
 
 
             await Server
                 .create({guild_id: guild.id, language})
 
-            await newMsg.edit(language === "pt" ? "Sucesso, o Apollus está pronto para utilizar" : "Success, Apollus is now ready to use!")
+            guild.me.permissions.has("READ_MESSAGE_HISTORY") && await newMsg.edit(language === "pt" ? "Sucesso, o Apollus está pronto para utilizar" : "Success, Apollus is now ready to use!")
 
-            sentMsg.delete()
-            reminderMessage.delete()
+            guild.me.permissions.has("READ_MESSAGE_HISTORY") && sentMsg.delete()
+            guild.me.permissions.has("READ_MESSAGE_HISTORY") && reminderMessage.delete()
         })
         .catch(err => console.log(err))
 }
