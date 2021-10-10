@@ -68,14 +68,14 @@ client.on("messageCreate", async (message) => {
             }
         }
 
-        const newMsg = await message.reply(language === "pt" ? "Aguarda..." : "Please wait...")
+        const newMsg = message.guild.me.permissions.has("READ_MESSAGE_HISTORY") && await message.reply(language === "pt" ? "Aguarda..." : "Please wait...")
 
         await Server
             .create({guild_id: message.guild.id, language})
 
         createGuild(message.guild.id, language)
 
-        await newMsg.edit(language === "pt" ? "Sucesso, o Apollus está pronto para utilizar" : "Success, Apollus is now ready to use!")
+        message.guild.me.permissions.has("READ_MESSAGE_HISTORY") && await newMsg.edit(language === "pt" ? "Sucesso, o Apollus está pronto para utilizar" : "Success, Apollus is now ready to use!")
         return
     }
 
