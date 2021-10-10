@@ -196,7 +196,7 @@ class Guild {
     async skipSong(message) {
         const song = this.queue[0]
 
-        if (!song.url) return;
+        if (!song?.url) return;
 
         this.previousMusic = song
 
