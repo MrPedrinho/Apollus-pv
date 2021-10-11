@@ -30,7 +30,7 @@ module.exports = {
             },
             "fields": [
                 {
-                    "name": lang === "pt" ? "Desenvoldido por" : "Developed by",
+                    "name": lang === "pt" ? "Desenvolvido por" : "Developed by",
                     "value": "Bob.#7752",
                     "inline": true
                 }, {
