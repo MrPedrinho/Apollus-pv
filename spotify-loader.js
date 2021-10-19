@@ -105,7 +105,7 @@ async function execute (message, props) {
             await guild.addToQueue(v);
         }
     } else {
-        await require("youtube-loader").execute(message, props)
+        await require("./youtube-loader").execute(message, props)
     }
 }
 

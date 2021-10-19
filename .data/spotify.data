@@ -2,10 +2,11 @@
     "client_id": "fd943d7083184f87aec5b2b13da0bf41",
     "client_secret": "e87c2967bddd476e96eca7c67f5f9738",
     "redirect_url": "http://localhost:3000",
-    "access_token": "BQC5Pwl7cOm9eYmn70idf0UaUuC_Q-2xrGH9FhDrWXpx3YnAFRNlwJAQbWL7I2Sdt3YhrpEh2MAdIxKQHWwBkBoynK0VF4NfpWgjD4tnR2Ead89xLvT4X6g3LpdW864WMUjqPkkV4kNiZA1Vlq9tim7jt9lQIutGSm00Raz2aH0P3-XWoDSSZkJ_p1wqFyOB3A",
+    "access_token": "BQBgcc8OC1-jgz7JkUgcTIGEk8_sGcTNGbmsYh42f4ZJbS6raN1cjEjdkyGdKHX9yqVxZj2uu6_cxR8zcGQt76fJXOGF4vfUzxxQ9PXdtNYOpXf1wlJM4LsL95a4qFpVgjEjjOKdmP1_QQi_AjRwvGg6Zg44sQHcSeTIg8iy3XpRBcKvzTsDyKrEjKlLlYUSGg",
     "refresh_token": "AQD_wEuchgwZKkXnapSIpGhkFFjoi-sotvhkIpSyZE7nXV59D3QctOiwOpMjVIB9EUN3zRgBKxERb2xqJTz58haV01Cq322JApRiXkKCK8NuAp5YANta5wiRPlLac49JbkE",
     "expires_in": 3600,
-    "expiry": 1633773398930,
+    "expiry": 1634664995763,
     "token_type": "Bearer",
-    "market": "PT"
+    "market": "PT",
+    "file": true
 }

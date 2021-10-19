@@ -19,9 +19,13 @@ class Guild {
         this.id = id
     }
 
+    deactivateTimeout() {
+        this.timeout && clearTimeout(this.timeout)
+    }
+
     inactiveTimeout() {
         this.player && this.player.stop()
-        setTimeout(async () => {
+        this.timeout = setTimeout(async () => {
             if (this.queue.length > 0) return
             this.player = undefined
             this.idler = undefined
@@ -37,6 +41,7 @@ class Guild {
 
     async play(song) {
         if (!song?.url) return this.inactiveTimeout()
+        this.deactivateTimeout()
         const date = new Date()
         const lang = this.language
 
