@@ -13,20 +13,15 @@ class Guild {
     previous_music = undefined
     idler = undefined
     connection = undefined
-    timeout = undefined
 
     constructor(language, id) {
         this.language = language
         this.id = id
     }
 
-    deactivateTimeout() {
-        this.timeout && clearTimeout(this.timeout)
-    }
-
     inactiveTimeout() {
         this.player && this.player.stop()
-        this.timeout = setTimeout(async () => {
+        setTimeout(async () => {
             if (this.queue.length > 0) return
             this.player = undefined
             this.idler = undefined
@@ -37,12 +32,11 @@ class Guild {
                 this.previousMusic.channel.send(this.language === "pt" ? "Como vocês me abandonaram, eu saí. Fodam-se a todos" : "Since you guys abandoned me, I'm leaving. Fuck y'all")
                 this.previousMusic = undefined
             }
-        }, 10 * 1000) // 15 * 60 * 1000
+        }, 15 * 60 * 1000)
     }
 
     async play(song) {
         if (!song?.url) return this.inactiveTimeout()
-        this.deactivateTimeout()
         const date = new Date()
         const lang = this.language
 
