@@ -51,37 +51,27 @@ async function selectLanguage(guild) {
         ]
     })
 
-    let reminderMessage, sentMsg
+    const reminderMessage = await defaultChannel.send(`<@!${guild.ownerId}>`)
+    const sentMsg = await defaultChannel.send({embeds: [embed]})
 
-    try {
-        reminderMessage = await defaultChannel.send(`<@!${guild.ownerId}>`)
-        sentMsg = await defaultChannel.send({embeds: [embed]})
-    } catch (e) {
-        console.log(e)
-    }
+    defaultChannel.awaitMessages({filter: m => (m.content === "fdp português" || m.content === "mofo english") && m.member.permissions.has("ADMINISTRATOR"), max: 1})
+        .then(async (collected) => {
+            if (Server.findOne({guild_id: guild.id})) return
+            const content = collected.map(d => d.content)[0]
+            const language = content === "mofo english" ? "en" : "pt"
 
-    try {
-        defaultChannel.awaitMessages({filter: m => (m.content === "fdp português" || m.content === "mofo english") && m.member.permissions.has("ADMINISTRATOR"), max: 1})
-            .then(async (collected) => {
-                if (Server.findOne({guild_id: guild.id})) return
-                const content = collected.map(d => d.content)[0]
-                const language = content === "mofo english" ? "en" : "pt"
-
-                const newMsg = guild.me.permissions.has("READ_MESSAGE_HISTORY") && await defaultChannel.send(language === "pt" ? "Aguarda..." : "Please wait...")
+            const newMsg = guild.me.permissions.has("READ_MESSAGE_HISTORY") && await defaultChannel.send(language === "pt" ? "Aguarda..." : "Please wait...")
 
 
-                await Server
-                    .create({guild_id: guild.id, language})
+            await Server
+                .create({guild_id: guild.id, language})
 
-                guild.me.permissions.has("READ_MESSAGE_HISTORY") && await newMsg.edit(language === "pt" ? "Sucesso, o Apollus está pronto para utilizar" : "Success, Apollus is now ready to use!")
+            guild.me.permissions.has("READ_MESSAGE_HISTORY") && await newMsg.edit(language === "pt" ? "Sucesso, o Apollus está pronto para utilizar" : "Success, Apollus is now ready to use!")
 
-                guild.me.permissions.has("READ_MESSAGE_HISTORY") && sentMsg.delete()
-                guild.me.permissions.has("READ_MESSAGE_HISTORY") && reminderMessage.delete()
-            })
-            .catch(err => console.log(err))
-    } catch (e) {
-        console.log(e)
-    }
+            guild.me.permissions.has("READ_MESSAGE_HISTORY") && sentMsg.delete()
+            guild.me.permissions.has("READ_MESSAGE_HISTORY") && reminderMessage.delete()
+        })
+        .catch(err => console.log(err))
 }
 
 const Server = new mongoose.model("Server", new mongoose.Schema({

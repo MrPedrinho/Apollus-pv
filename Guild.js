@@ -59,15 +59,11 @@ class Guild {
 
         song.channel.send({embeds: [embed]})
 
-        try {
-            const stream = await youtube.stream(song.url, {cookie: process.env.COOKIES})
-            await entersState(this.connection, VoiceConnectionStatus.Ready, 30_000);
-            this.connection.subscribe(this.player)
-            const resource = createAudioResource(stream.stream, {inputType: stream.type});
-            this.player.play(resource);
-        } catch (e) {
-            console.log(e)
-        }
+        const stream = await youtube.stream(song.url, {cookie: process.env.COOKIES})
+        await entersState(this.connection, VoiceConnectionStatus.Ready, 30_000);
+        this.connection.subscribe(this.player)
+        const resource = createAudioResource(stream.stream, {inputType: stream.type});
+        this.player.play(resource);
     }
 
     async video_player() {
