@@ -33,7 +33,11 @@ class Guild {
             this.connection = undefined
 
             if (this.previousMusic) {
-                this.previousMusic.channel.send(this.language === "pt" ? "Como vocês me abandonaram, eu saí. Fodam-se a todos" : "Since you guys abandoned me, I'm leaving. Fuck y'all")
+                try {
+                    this.previousMusic.channel.send(this.language === "pt" ? "Como vocês me abandonaram, eu saí. Fodam-se a todos" : "Since you guys abandoned me, I'm leaving. Fuck y'all")
+                } catch (e) {
+                    console.log(e)
+                }
                 this.previousMusic = undefined
             }
         }, 15 * 60 * 1000)
