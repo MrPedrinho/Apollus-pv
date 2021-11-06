@@ -26,7 +26,9 @@ module.exports = {
         let durationAcc = 0;
 
         const nQueue = queue.slice(0, 10).map((song, idx) => {
-            let computedDuration = Math.floor(durationAcc/60) + ":" + durationAcc%60 < 10 ? durationAcc%60 + "0" : durationAcc%60
+            console.log(durationAcc)
+            let computedDuration = `${Math.floor(durationAcc/60).toString()}:${durationAcc%60 < 10 ? (durationAcc%60).toString() + "0" : (durationAcc%60).toString()}`
+            console.log(computedDuration)
             durationAcc += song.durationSec
             if (idx > 0) return `${idx + 1} - [${song.title}](${song.url}) - **${song.duration}** (${lang === "pt" ? `aproximadamente ${computedDuration} até tocar`: `approximately ${computedDuration} until it plays`})\n`
             return `
