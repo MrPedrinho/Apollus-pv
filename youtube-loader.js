@@ -29,7 +29,7 @@ async function execute (message, props) {
 
     if (valid === "video") {
         try {
-            const {video_details} = await video_info(props[0], {cookie: process.env.COOKIES})
+            const {video_details} = await video_info(props[0])
             song = {
                 title: video_details.title,
                 url: video_details.url,

@@ -29,7 +29,7 @@ module.exports = {
             message.channel.send(`Never gonna give you up <@!${message.author.id}>`)
         }
 
-        const {video_details} = await video_info("https://www.youtube.com/watch?v=dQw4w9WgXcQ", {cookie: process.env.COOKIES})
+        const {video_details} = await video_info("https://www.youtube.com/watch?v=dQw4w9WgXcQ",)
 
         const song = {
             title: video_details.title,

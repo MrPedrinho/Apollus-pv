@@ -29,7 +29,7 @@ module.exports = {
         }
 
 
-        const {video_details} = await video_info("https://www.youtube.com/watch?v=5U5kmBT_WtA", {cookie: process.env.COOKIES})
+        const {video_details} = await video_info("https://www.youtube.com/watch?v=5U5kmBT_WtA")
         const song = {
             title: video_details.title,
             url: video_details.url,
