@@ -1,5 +1,8 @@
 # Apollus
 
+[Invite)(https://discord.com/oauth2/authorize?client_id=880104428676468798&scope=bot&permissions=36817920)
+
+
 (English at the bottom)
 
 Apollus, o bot de música mais ofensivo do Discord. O bot vai-te ofender, insultar, e ficar irritado contigo, e mais importante, dizer asneiras sempre que puder.
