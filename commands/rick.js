@@ -35,7 +35,7 @@ module.exports = {
             title: video_details.title,
             url: video_details.url,
             duration: video_details.durationRaw,
-            thumbnail_url: video_details.thumbnail.url,
+            thumbnail_url: video_details.thumbnails[0].url,
             author: message.author,
             channel: message.channel,
         }

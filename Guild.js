@@ -151,7 +151,7 @@ class Guild {
                 url: v.url,
                 duration: v.durationRaw,
                 durationSec: v.durationInSec,
-                thumbnail_url: v.thumbnail.url,
+                thumbnail_url: v.thumbnails[0].url,
                 author: message.author,
                 channel: message.channel
             })
@@ -178,7 +178,7 @@ class Guild {
                 **${lang === "pt" ? "Nº de Músicas" : "Number of Songs"}**: ${playlist.total_videos}
             `,
             "thumbnail": {
-                "url": playlist.thumbnail.url
+                "url": playlist.thumbnails[0].url
             },
             "footer": {
                 "icon_url": message.author.displayAvatarURL(),
