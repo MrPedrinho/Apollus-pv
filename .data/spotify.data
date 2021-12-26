@@ -1,0 +1,11 @@
+{
+    "client_id": "fd943d7083184f87aec5b2b13da0bf41",
+    "client_secret": "e87c2967bddd476e96eca7c67f5f9738",
+    "redirect_url": "http://localhost:3000",
+    "access_token": "BQCPFt6Aj86uNYOKZeKJAZAUxsM2IrBMQavecfB0gZICkACaxbPXtYPrL3TGE6xr_irzPnNNjAw4xnhMH1ohX-Hc8blys8Rq0SSIWvJgZeVw6BaQrkCW8bws8LrvIdXsyUxl2ImA1rBtBTcY3qaTngBnoapFkmQFyCUmCQ",
+    "refresh_token": "AQB2QFLUJ0Ev65DXq-t7lfiMLAtC4NmyabVNFZ1MDGB7p-YC7PTiY-oJedPvUNeAvAClcdvTnYEBMGqlqlgHxVT0j6JfYXiiR35YIsj9rORcElrTZf3MS2GcWZFyfFJ5Ilw",
+    "expires_in": 3600,
+    "expiry": 1640538410166,
+    "token_type": "Bearer",
+    "market": "PT"
+}

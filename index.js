@@ -130,6 +130,7 @@ client.on("messageCreate", async (message) => {
         await command.execute(message, props.filter(p => p.length > 0))
     } catch (err){
         try {
+            console.log(err)
             await message.reply(lang === "pt" ? "Conseguiste partir o bot, parabéns" : "You managed to break the bot, congratulations")
         } catch (e) {
             console.log(e)

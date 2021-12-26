@@ -1,5 +1,5 @@
 const play = require("play-dl")
-const {is_expired, refreshToken, sp_validate, spotify} = require("play-dl")
+const {sp_validate, spotify} = require("play-dl")
 const {getGuild} = require("./assets")
 const {MessageEmbed} = require("discord.js")
 
@@ -12,7 +12,7 @@ async function getSong(title, message) {
         url: searched.url,
         duration: searched.durationRaw,
         durationSec: parseInt(searched.durationInSec),
-        thumbnail_url: searched.thumbnail.url,
+        thumbnail_url: searched.thumbnails[0].url,
         author: message.author,
         channel: message.channel
     }
@@ -23,9 +23,9 @@ async function execute (message, props) {
     const guild = getGuild(message.guild.id)
     const lang = guild.language
 
-    if(is_expired()){
-        await refreshToken()
-    }
+    if (play.is_expired()) {
+        await play.refreshToken()
+   }
 
     let valid = sp_validate(props[0])
     const date = new Date()

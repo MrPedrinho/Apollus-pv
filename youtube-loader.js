@@ -6,13 +6,13 @@ async function searchAndAdd(props, message, lang) {
     let video = await search(props.join(" "), {limit: 1})
     video = video[0]
     if (!video) return message.reply(lang === "pt" ? "Parabéns, conseguiste partir o bot. Impressionante, fds" : "Congrats, you managed to break the bot. Fucking impressive");
-
+    console.log(video)
     return {
         title: video.title,
         url: video.url,
         duration: video.durationRaw,
         durationSec: video.durationInSec,
-        thumbnail_url: video.thumbnail.url,
+        thumbnail_url: video.thumbnails[0].url,
         author: message.author,
         channel: message.channel
     }
@@ -35,7 +35,7 @@ async function execute (message, props) {
                 url: video_details.url,
                 duration: video_details.durationRaw,
                 durationSec: parseInt(song.durationInSec),
-                thumbnail_url: video_details.thumbnail.url,
+                thumbnail_url: video_details.thumbnails[0].url,
                 author: message.author,
                 channel: message.channel,
             }

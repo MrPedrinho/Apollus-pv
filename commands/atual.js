@@ -38,7 +38,7 @@ module.exports = {
                 "text": `${lang === "pt" ? "Música de" : "Song by"} ${current.author.username}#${current.author.discriminator}`
             },
             "thumbnail": {
-                "url": song.thumbnail.url
+                "url": song.thumbnails[0].url
             },
             "fields": [
                 {
