@@ -2,9 +2,6 @@ const {getGuild} = require("../assets");
 const {MessageEmbed} = require("discord.js");
 
 module.exports = {
-    help: 'Mostra a playlist atual',
-    usage: "fdp playlist",
-
     en: {
         cmd: "queue",
         help: "Displays the song queue",
@@ -28,10 +25,10 @@ module.exports = {
         const nQueue = queue.slice(0, 10).map((song, idx) => {
             let computedDuration = `${Math.floor(durationAcc/60).toString()}:${durationAcc%60 < 10 ? (durationAcc%60).toString() + "0" : (durationAcc%60).toString()}`
             durationAcc += song.durationSec
-            if (idx > 0) return `${idx + 1} - [${song.title}](${song.url}) - **${song.duration}** (${lang === "pt" ? `aproximadamente ${computedDuration} até tocar`: `approximately ${computedDuration} until it plays`})\n`
+            if (idx > 0) return `${idx} - [${song.title}](${song.url}) - **${song.duration}** (${lang === "pt" ? `aproximadamente ${computedDuration} até tocar`: `approximately ${computedDuration} until it plays`})\n`
             return `
-                ⬐ ${lang === "pt" ? "Música atual, ganda fixe}" : "Current music, very pog"}
-                ${idx + 1} - [${song.title}](${song.url}) - **${song.duration}**
+                ⬐ ${lang === "pt" ? "Música atual, ganda fixe}" : "Current music, much wow"}
+                ${lang === "pt" ? "Agora" : "Now"} - [${song.title}](${song.url}) - **${song.duration}**
                 ⬑\n`
         })
 
