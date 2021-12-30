@@ -9,8 +9,9 @@ const {entersState, VoiceConnectionStatus, createAudioResource,
 class Guild {
     queue = []
     player = undefined
+    resource = undefined
     looping = false
-    previous_music = undefined
+    previousMusic = undefined
     idler = undefined
     connection = undefined
 
@@ -28,6 +29,7 @@ class Guild {
         this.timeout = setTimeout(async () => {
             if (this.queue.length > 0) return
             this.player = undefined
+            this.resource = undefined
             this.idler = undefined
             this.connection && this.connection.destroy()
             this.connection = undefined
@@ -71,8 +73,8 @@ class Guild {
         const stream = await youtube.stream(song.url)
         await entersState(this.connection, VoiceConnectionStatus.Ready, 30_000);
         this.connection.subscribe(this.player)
-        const resource = createAudioResource(stream.stream, {inputType: stream.type});
-        this.player.play(resource);
+        this.resource = createAudioResource(stream.stream, {inputType: stream.type, inlineVolume: true})
+        this.player.play(this.resource);
     }
 
     async video_player() {
@@ -96,6 +98,7 @@ class Guild {
             this.connection = undefined
             await this.player.stop()
             this.player = undefined
+            this.resource = undefined
             this.idler = undefined
             this.queue = []
             throw err
@@ -113,6 +116,7 @@ class Guild {
         })
         this.connection = this.connection || undefined
         this.looping = this.looping || false
+        this.resource = this.resource || undefined
         this.previousMusic = this.previousMusic || undefined
 
         if (!this.idler) {
@@ -241,15 +245,25 @@ class Guild {
         }
     }
 
+    async setVolume(volume) {
+        if (!this.player) this.setPlayer()
+        this.resource.volume.setVolume(volume)
+    }
+
     cleanQueue() {
         this.queue = []
         this.player.stop()
         this.player = undefined
+        this.resource = undefined
         this.idler = undefined
     }
 
     getQueue() {
         return this.queue
+    }
+
+    setQueue(queue) {
+        this.queue = queue
     }
 
     getPlayer() {
@@ -318,15 +332,15 @@ class Guild {
     }
 
     shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
+        let fArr = array
+        for (let i = fArr.length - 1; i > 0; i--) {
             let j = Math.floor(Math.random() * (i + 1));
-            let temp = array[i];
-            array[i] = array[j];
-            array[j] = temp;
+            let temp = fArr[i];
+            fArr[i] = fArr[j];
+            fArr[j] = temp;
         }
-        return array
+        return fArr
     }
-
 
     async restartSong() {
         try {
@@ -342,6 +356,7 @@ class Guild {
         this.queue = []
         this.player.stop()
         this.player = undefined
+        this.resource = undefined
         this.idler = undefined
         this.looping = false
     }
