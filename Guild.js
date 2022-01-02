@@ -33,6 +33,7 @@ class Guild {
             this.idler = undefined
             this.connection && this.connection.destroy()
             this.connection = undefined
+            this.looping = false
 
             if (this.previousMusic) {
                 try {
@@ -100,6 +101,7 @@ class Guild {
             this.player = undefined
             this.resource = undefined
             this.idler = undefined
+            this.looping = false
             this.queue = []
             throw err
         }
@@ -256,6 +258,7 @@ class Guild {
         this.player = undefined
         this.resource = undefined
         this.idler = undefined
+        this.looping = false
     }
 
     getQueue() {

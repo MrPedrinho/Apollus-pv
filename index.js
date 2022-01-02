@@ -6,7 +6,7 @@ require("dotenv").config()
 //https://discord.com/oauth2/authorize?client_id=894845421380337684&scope=bot&permissions=36809984
 
 const client = new Client({intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"]})
-
+module.exports = client
 // Mongoose
 
 connectMongo().catch(err => console.log(err))
@@ -149,9 +149,18 @@ client.on("guildDelete", async (guild) => {
 client.on("ready", () => console.log("ready bitch"))
 
 client.login(process.env.TOKEN).then(_r => {
-    client.user.setActivity("music", {type: "LISTENING"})
+    let servers = client.guilds.cache
+    let options = [{name: "music to " + servers.size + " servers", type: "PLAYING"}, {name: "you enjoy music", type: "WATCHING"}, {name: "to be the best music bot", type: "COMPETING"}]
+    let current = 0
 
-    const servers = client.guilds.cache
+    setInterval(() => {
+        const {name, type} = options[current]
+        client.user.setActivity(name, {type})
+        current++
+        if (current >= options.length) current = 0
+    }, 20*1000)
+
+
     servers.forEach(async sv => {
         let info = await Server
             .findOne({guild_id: sv.id})

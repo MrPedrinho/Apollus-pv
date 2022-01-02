@@ -1,5 +1,6 @@
 const {getGuild} = require("../assets");
 const {MessageEmbed} = require("discord.js");
+const {guilds} = require("../index");
 
 module.exports = {
     en: {
@@ -29,11 +30,14 @@ module.exports = {
                     "name": "Delay:",
                     "value": ping + "ms",
                     "inline": true
+                }, {
+                    "name": lang === "pt" ? "Servidores:" : "Servers:",
+                    "value": guilds.cache.size.toString(),
+                    "inline": true
                 },
                 {
                     "name": lang === "pt" ? "Versão:" : "Version:",
                     "value": version,
-                    "inline": true
                 }
             ],
 
